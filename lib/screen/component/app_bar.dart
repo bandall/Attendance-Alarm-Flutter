@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String? title;
+  final bool backButton;
 
-  const CustomAppBar({Key? key, this.title}) : super(key: key);
+  const CustomAppBar({Key? key, this.title, this.backButton = false})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -18,15 +20,19 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         elevation: 5,
         child: Container(
           decoration: const BoxDecoration(color: Colors.blueAccent),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+          child: Stack(
+            alignment: Alignment.center, // 제목을 가운데로 정렬
             children: [
-              const Icon(
-                Icons.location_on,
-                size: 26,
-                color: Colors.white,
-              ),
-              const SizedBox(width: 8),
+              if (backButton) // 뒤로가기 버튼이 필요할 경우
+                Positioned(
+                  left: 0, // 뒤로가기 버튼을 왼쪽으로 정렬
+                  child: IconButton(
+                    icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                ),
               Text(
                 title!,
                 style: const TextStyle(
