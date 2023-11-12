@@ -12,7 +12,7 @@ class LoginApi extends TokenApiUtils {
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
 
   Future<JwtTokenInfo> idpwLogin(String email, String password) async {
-    final url = Uri.parse('$baseUrl/api/account/auth');
+    final url = Uri.parse('$loginServerUrl/api/account/auth');
     final response = await http
         .post(
       url,
@@ -43,7 +43,7 @@ class LoginApi extends TokenApiUtils {
   }
 
   Future<void> logout() async {
-    final url = Uri.parse('$baseUrl/api/account/logout');
+    final url = Uri.parse('$loginServerUrl/api/account/logout');
     final refreshToken = await _storage.read(key: 'refreshToken');
 
     await http

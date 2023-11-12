@@ -30,7 +30,21 @@ class AlarmInfo {
       alarmGap: json['alarmGap'],
       isAlarmOn: json['isAlarmOn'],
       subjectId: json['subjectDto']['subjectId'],
-      subjectName: json['subjectDto']['name'], // subjectName이 아니라 name으로 수정
+      subjectName: json['subjectDto']['name'],
+    );
+  }
+
+  factory AlarmInfo.fromDbJson(Map<String, dynamic> json) {
+    return AlarmInfo(
+      alarmId: json['alarmId'],
+      memberId: json['memberId'],
+      day: json['day'],
+      hour: json['hour'],
+      minute: json['minute'],
+      alarmGap: json['alarmGap'],
+      isAlarmOn: json['isAlarmOn'] == 1,
+      subjectId: json['subjectId'],
+      subjectName: json['subjectName'],
     );
   }
 

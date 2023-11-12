@@ -77,7 +77,7 @@ class _AlarmEditPageState extends State<AlarmEditPage> {
                 },
               ),
               ListTile(
-                title: const Text('알림 시간 조절'),
+                title: const Text('수업 시간 N분 전 알림'),
                 trailing:
                     Text('$_alarmGap분', style: const TextStyle(fontSize: 20)),
                 onTap: () {

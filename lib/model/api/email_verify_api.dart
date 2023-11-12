@@ -8,7 +8,7 @@ import '../exception/exception_message.dart';
 
 class EmailVerifyApi extends TokenApiUtils {
   Future<bool> authEmail(String email, String code) async {
-    final url = Uri.parse('$baseUrl/api/email-verification');
+    final url = Uri.parse('$loginServerUrl/api/email-verification');
     final response = await http
         .post(
       url,
@@ -26,7 +26,8 @@ class EmailVerifyApi extends TokenApiUtils {
   }
 
   Future<void> resendAuthEmail(String email) async {
-    final url = Uri.parse('$baseUrl/api/email-verification?email=$email');
+    final url =
+        Uri.parse('$loginServerUrl/api/email-verification?email=$email');
     final response = await http
         .get(url, headers: await getHeaders())
         .timeout(timoutTime, onTimeout: () {

@@ -48,67 +48,6 @@ class _TabPageState extends State<TabPage> with SingleTickerProviderStateMixin {
     // initTable();
   }
 
-  // void initTable() async {
-  //   var tableId = await _storage.read(key: 'tableId');
-  //   if (tableId == null) {
-  //     _isTableSetted = false;
-  //     debugPrint('isTableSetted: $_isTableSetted');
-  //     _showTableIDInputDialog();
-  //     return;
-  //   }
-  //   _isTableSetted = true;
-  //   debugPrint('isTableSetted: $_isTableSetted');
-  // }
-
-  // void _showTableIDInputDialog() {
-  //   TextEditingController controller = TextEditingController();
-  //   showDialog(
-  //     context: context,
-  //     barrierDismissible: false, // user must tap button to dismiss dialog!
-  //     builder: (BuildContext context) {
-  //       return AlertDialog(
-  //         shape: const RoundedRectangleBorder(
-  //             borderRadius: BorderRadius.all(Radius.circular(20.0))),
-  //         title: const Text(
-  //           '시간표 설정하기',
-  //           style: TextStyle(color: Colors.blueGrey, fontSize: 24),
-  //         ),
-  //         content: TextField(
-  //           controller: controller,
-  //           keyboardType: TextInputType.text,
-  //           decoration: InputDecoration(
-  //             hintText: '시간표 공유 URL을 입력해주세요.',
-  //             hintStyle: const TextStyle(color: Colors.grey),
-  //             filled: true,
-  //             fillColor: Colors.blueGrey.shade50,
-  //             enabledBorder: const OutlineInputBorder(
-  //               borderRadius: BorderRadius.all(Radius.circular(12.0)),
-  //               borderSide: BorderSide(color: Colors.blueGrey, width: 2),
-  //             ),
-  //             focusedBorder: const OutlineInputBorder(
-  //               borderRadius: BorderRadius.all(Radius.circular(10.0)),
-  //               borderSide: BorderSide(color: Colors.blueGrey),
-  //             ),
-  //           ),
-  //         ),
-  //         actions: [
-  //           TextButton(
-  //             child: const Text('알람 설정하기',
-  //                 style: TextStyle(fontSize: 18, color: Colors.blueGrey)),
-  //             onPressed: () {
-  //               Navigator.of(context).pop(controller.text);
-  //             },
-  //           ),
-  //         ],
-  //       );
-  //     },
-  //   ).then((value) {
-  //     if (value != null) {
-  //       _storage.write(key: 'tableId', value: value);
-  //     }
-  //   });
-  // }
-
   @override
   void dispose() {
     _subscription?.cancel();

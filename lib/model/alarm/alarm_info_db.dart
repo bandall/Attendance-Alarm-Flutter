@@ -40,6 +40,17 @@ class AlarmInfoDb {
     );
   }
 
+  Future<AlarmInfo> getAlarm(int alarmId) async {
+    final db = await database;
+    var result = await db
+        .query('alarm_info', where: 'alarmId = ?', whereArgs: [alarmId]);
+    if (result.isNotEmpty) {
+      return AlarmInfo.fromDbJson(result.first);
+    }
+
+    throw Exception('AlarmInfo not found');
+  }
+
   Future<List<AlarmInfo>> getAllAlarms() async {
     final db = await database;
     final List<Map<String, dynamic>> maps = await db.query('alarm_info');

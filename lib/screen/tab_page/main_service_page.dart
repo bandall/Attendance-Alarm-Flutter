@@ -1,6 +1,7 @@
-import 'package:alarm/alarm.dart';
+import 'package:acha/model/alarm/alarm_controller.dart';
 import 'package:flutter/material.dart';
 
+import '../../model/alarm/alarm_info.dart';
 import '../component/app_bar.dart';
 
 class MainServicePage extends StatefulWidget {
@@ -11,20 +12,28 @@ class MainServicePage extends StatefulWidget {
 }
 
 class _MainServicePageState extends State<MainServicePage> {
-  void setAlarm() async {
-    final alarmSettings = AlarmSettings(
-      id: 42,
-      dateTime: DateTime.now().add(const Duration(seconds: 5)),
-      assetAudioPath: 'assets/pony.mp3',
-      loopAudio: true,
-      vibrate: true,
-      volumeMax: false,
-      fadeDuration: 2.0,
-      notificationTitle: '출석체크 하세요!!',
-      notificationBody: '[수업시간] 데이터베이스',
-      enableNotificationOnKill: true,
-    );
-    await Alarm.set(alarmSettings: alarmSettings);
+  void setAlarm() {
+    DateTime alarmTime =
+        DateTime.now().add(const Duration(minutes: 1, seconds: 10));
+    AlarmController().setAlarm(AlarmInfo(
+      alarmId: 1,
+      alarmGap: 0,
+      subjectId: 1,
+      memberId: 1,
+      isAlarmOn: true,
+      subjectName: '수학',
+      day: alarmTime.weekday - 1,
+      hour: alarmTime.hour,
+      minute: alarmTime.minute,
+    ));
+  }
+
+  void getAlarm() {
+    AlarmController().getAlarms();
+  }
+
+  void delteAlarm() {
+    AlarmController().deleteAll();
   }
 
   @override
@@ -64,7 +73,9 @@ class _MainServicePageState extends State<MainServicePage> {
               ),
               const SizedBox(height: 24),
               ElevatedButton(
-                onPressed: setAlarm,
+                onPressed: () {
+                  setAlarm();
+                },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Theme.of(context).primaryColor,
                   shape: RoundedRectangleBorder(
@@ -75,7 +86,47 @@ class _MainServicePageState extends State<MainServicePage> {
                   padding:
                       EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0),
                   child: Text(
-                    "Stay Updated",
+                    "Set Alarm",
+                    style: TextStyle(fontSize: 18, color: Colors.white),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 8),
+              ElevatedButton(
+                onPressed: () {
+                  getAlarm();
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Theme.of(context).primaryColor,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                child: const Padding(
+                  padding:
+                      EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0),
+                  child: Text(
+                    "Get Alarm",
+                    style: TextStyle(fontSize: 18, color: Colors.white),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 8),
+              ElevatedButton(
+                onPressed: () {
+                  delteAlarm();
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Theme.of(context).primaryColor,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                child: const Padding(
+                  padding:
+                      EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0),
+                  child: Text(
+                    "Delete Alarm",
                     style: TextStyle(fontSize: 18, color: Colors.white),
                   ),
                 ),

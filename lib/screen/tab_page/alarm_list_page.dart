@@ -1,9 +1,9 @@
+import 'package:acha/model/alarm/alarm_controller.dart';
 import 'package:acha/model/alarm/alarm_info.dart';
 import 'package:acha/model/alarm/alarm_info_db.dart';
 import 'package:acha/model/api/service_api.dart';
 import 'package:acha/provider/user_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:provider/provider.dart';
 
@@ -21,7 +21,6 @@ class AlarmListPage extends StatefulWidget {
 class _AlarmListPageState extends State<AlarmListPage> {
   List<AlarmInfo> _alarmList = [];
   AlarmInfoDb alarmDb = AlarmInfoDb();
-  final FlutterSecureStorage _storage = const FlutterSecureStorage();
 
   final List<String> _dayList = ['월', '화', '수', '목', '금', '토', '일'];
 
@@ -44,27 +43,33 @@ class _AlarmListPageState extends State<AlarmListPage> {
 
       return a.day.compareTo(b.day);
     });
+
     setState(() {
       _alarmList = updatedList;
     });
   }
 
+  // 시간표 등록 함수
   void _setTimeTable(String shareUrl, UserProvider userProvider) async {
     try {
       await ServiceApi().setTimeTable(shareUrl, userProvider);
-      _getAlarms(userProvider);
+      _getAlarmsAndSetAlarmSchdule(userProvider);
     } catch (e) {
       Assets().showErrorSnackBar(context, e.toString());
     }
   }
 
-  void _getAlarms(UserProvider userProvider) async {
+  void _getAlarmsAndSetAlarmSchdule(UserProvider userProvider) async {
     try {
       List<AlarmInfo> alarms = await ServiceApi().getAllAlarms(userProvider);
+      await AlarmController().deleteAll();
       await alarmDb.deleteAll();
 
       for (var alarm in alarms) {
         await alarmDb.insert(alarm);
+        if (alarm.isAlarmOn) {
+          await AlarmController().setAlarm(alarm);
+        }
       }
 
       _setAlarmList();
@@ -73,10 +78,13 @@ class _AlarmListPageState extends State<AlarmListPage> {
     }
   }
 
-  void _updateAlarmOn(int alarmId, int alarmGap, bool isAlarmOn,
+  void _updateAlarm(int alarmId, int alarmGap, bool isAlarmOn,
       UserProvider userProvider) async {
     try {
       await alarmDb.updateAlarmOn(alarmId, isAlarmOn, alarmGap);
+      AlarmInfo alarmInfo = await alarmDb.getAlarm(alarmId);
+      AlarmController().updateAlarm(alarmInfo);
+
       await ServiceApi()
           .updateAlarm(alarmId, alarmGap, isAlarmOn, userProvider);
       _setAlarmList();
@@ -87,6 +95,7 @@ class _AlarmListPageState extends State<AlarmListPage> {
 
   void _deleteAlarm(UserProvider userProvider) async {
     try {
+      await AlarmController().deleteAll();
       await alarmDb.deleteAll();
       await ServiceApi().deleteTimetableAndAlarm(userProvider);
       _setAlarmList();
@@ -149,7 +158,7 @@ class _AlarmListPageState extends State<AlarmListPage> {
         child: Stack(
           children: <Widget>[
             ListView.separated(
-              itemCount: _alarmList.isEmpty ? 1 : _alarmList.length,
+              itemCount: _alarmList.isEmpty ? 1 : _alarmList.length + 1,
               separatorBuilder: (context, index) {
                 if (_alarmList.isEmpty) {
                   return Container();
@@ -224,7 +233,7 @@ class _AlarmListPageState extends State<AlarmListPage> {
                     trailing: Switch(
                       value: alarmInfo.isAlarmOn,
                       onChanged: (value) async {
-                        _updateAlarmOn(alarmInfo.alarmId, alarmInfo.alarmGap,
+                        _updateAlarm(alarmInfo.alarmId, alarmInfo.alarmGap,
                             value, userProvider);
                       },
                     ),
@@ -261,7 +270,7 @@ class _AlarmListPageState extends State<AlarmListPage> {
             child: const Icon(Icons.sync),
             label: '동기화',
             onTap: () {
-              _getAlarms(userProvider);
+              _getAlarmsAndSetAlarmSchdule(userProvider);
             },
           ),
           SpeedDialChild(

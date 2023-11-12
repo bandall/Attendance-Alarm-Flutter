@@ -12,7 +12,7 @@ import '../../provider/user_provider.dart';
 import '../jwt_token_info.dart';
 
 class TokenApiUtils {
-  final baseUrl = dotenv.env['LOGIN_SERVER_URL']!;
+  final loginServerUrl = dotenv.env['LOGIN_SERVER_URL']!;
   final timoutTime = const Duration(seconds: 2);
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
 
@@ -33,6 +33,8 @@ class TokenApiUtils {
     String? refreshToken = await _storage.read(key: 'refreshToken');
 
     if (refreshToken == null || accessToken == null) {
+      await _storage.deleteAll();
+      await userProvider.deleteState(true);
       throw TokenExpiredException(ExceptionMessage.TOKEN_EXPIRED);
     }
 
@@ -42,6 +44,7 @@ class TokenApiUtils {
 
     if (JwtDecoder.isExpired(refreshToken)) {
       await _storage.deleteAll();
+      await userProvider.deleteState(true);
       throw TokenExpiredException(ExceptionMessage.TOKEN_EXPIRED);
     }
 
@@ -49,7 +52,7 @@ class TokenApiUtils {
   }
 
   Future<void> refreshTokens(UserProvider userProvider) async {
-    final url = Uri.parse('$baseUrl/api/account/refresh');
+    final url = Uri.parse('$loginServerUrl/api/account/refresh');
     final accessToken = await _storage.read(key: 'accessToken');
     final refreshToken = await _storage.read(key: 'refreshToken');
 
@@ -92,6 +95,25 @@ class TokenApiUtils {
   Future<void> isResponseSuccess(http.Response response) async {
     if (response.statusCode == 500) {
       throw Exception(response.body);
+    }
+
+    if (response.statusCode != 200) {
+      final json = jsonDecode(utf8.decode(response.bodyBytes));
+      print(json);
+      throw Exception(json['data']['errMsg']);
+    }
+  }
+
+  Future<void> isResponseSuccessWithProvider(
+      http.Response response, UserProvider userProvider) async {
+    if (response.statusCode == 500) {
+      throw Exception(response.body);
+    }
+
+    if (response.statusCode == 401) {
+      await _storage.deleteAll();
+      await userProvider.deleteState(true);
+      throw TokenExpiredException(ExceptionMessage.TOKEN_EXPIRED);
     }
 
     if (response.statusCode != 200) {

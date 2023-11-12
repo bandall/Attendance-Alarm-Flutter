@@ -10,7 +10,7 @@ import '../exception/exception_message.dart';
 class UserInfoApi extends TokenApiUtils {
   Future<void> createAccount(
       String email, String password, String username) async {
-    final url = Uri.parse('$baseUrl/api/account/create');
+    final url = Uri.parse('$loginServerUrl/api/account/create');
 
     final response = await http
         .post(
@@ -34,7 +34,7 @@ class UserInfoApi extends TokenApiUtils {
   }
 
   Future<String> getUserInfo(UserProvider userProvider) async {
-    final url = Uri.parse('$baseUrl/api/whoami');
+    final url = Uri.parse('$loginServerUrl/api/whoami');
     final response = await http
         .get(url, headers: await getHeaders(authRequired: true))
         .timeout(timoutTime, onTimeout: () {
@@ -50,7 +50,7 @@ class UserInfoApi extends TokenApiUtils {
 
   Future<void> editUsername(
       UserProvider userProvider, String newUsername) async {
-    final url = Uri.parse('$baseUrl/api/account/update-username');
+    final url = Uri.parse('$loginServerUrl/api/account/update-username');
     final response = await http
         .post(
       url,
@@ -67,7 +67,7 @@ class UserInfoApi extends TokenApiUtils {
 
   Future<void> editPassword(
       UserProvider userProvider, String oldPassword, String newPassword) async {
-    final url = Uri.parse('$baseUrl/api/account/update-password');
+    final url = Uri.parse('$loginServerUrl/api/account/update-password');
     final response = await http
         .post(
       url,

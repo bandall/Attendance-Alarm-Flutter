@@ -1,3 +1,4 @@
+import 'package:acha/model/alarm/app_launcher.dart';
 import 'package:alarm/alarm.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -23,20 +24,44 @@ class MainPageState extends State<MainPage> {
   }
 
   setAlarmStream() {
-    Alarm.ringStream.stream.listen((event) {
-      debugPrint(event.notificationBody);
+    Alarm.ringStream.stream.listen((event) async {
+      debugPrint(event.toString());
+      var alarmTime = event.dateTime;
+
+      final alarmSettings = AlarmSettings(
+        id: event.id,
+        dateTime: alarmTime.add(const Duration(days: 7)),
+        assetAudioPath: 'assets/pony.mp3',
+        loopAudio: true,
+        vibrate: true,
+        volumeMax: false,
+        fadeDuration: 2.0,
+        notificationTitle: event.notificationTitle,
+        notificationBody: event.notificationBody,
+        enableNotificationOnKill: true,
+        stopOnNotificationOpen: false,
+      );
+
       showDialog(
         context: context,
+        barrierDismissible: false,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text(event.notificationTitle.toString()),
-            content: Text(event.notificationBody.toString()),
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20.0)),
+            title: Text(event.notificationTitle.toString(),
+                style: const TextStyle(color: Colors.black, fontSize: 24)),
+            content: Text(event.notificationBody.toString(),
+                style: const TextStyle(color: Colors.grey, fontSize: 18)),
             actions: <Widget>[
               TextButton(
-                child: const Text('OK'),
-                onPressed: () {
-                  Alarm.stop(event.id);
+                child: const Text('확인',
+                    style: TextStyle(color: Colors.black, fontSize: 18)),
+                onPressed: () async {
+                  await Alarm.stop(event.id);
+                  await Alarm.set(alarmSettings: alarmSettings);
                   Navigator.of(context).pop();
+                  AppLauncher().launchApp();
                 },
               ),
             ],
