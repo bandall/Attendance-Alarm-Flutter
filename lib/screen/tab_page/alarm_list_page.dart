@@ -182,7 +182,17 @@ class _AlarmListPageState extends State<AlarmListPage> {
               },
               itemBuilder: (context, index) {
                 if (_alarmList.isEmpty) {
-                  return const Center(child: Text("알람이 없습니다"));
+                  return const Center(
+                    child: Text(
+                      "알람이 없습니다",
+                      style: TextStyle(
+                        fontSize: 20.0, // 텍스트 크기
+                        color: Colors.black87, // 텍스트 색상
+                        fontWeight: FontWeight.w500, // 텍스트 가중치
+                        letterSpacing: 0.5, // 문자 간 거리
+                      ),
+                    ),
+                  );
                 }
                 if (index == 0) {
                   return Padding(

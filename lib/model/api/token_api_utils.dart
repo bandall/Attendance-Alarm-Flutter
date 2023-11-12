@@ -13,7 +13,7 @@ import '../jwt_token_info.dart';
 
 class TokenApiUtils {
   final loginServerUrl = dotenv.env['LOGIN_SERVER_URL']!;
-  final timoutTime = const Duration(seconds: 2);
+  final timoutTime = const Duration(seconds: 5);
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
 
   Future<Map<String, String>> getHeaders({bool authRequired = false}) async {

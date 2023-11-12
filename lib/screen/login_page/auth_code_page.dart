@@ -160,7 +160,7 @@ class _AuthCodePageState extends State<AuthCodePage> {
                   fontSize: 12,
                 ),
               ),
-              keyboardType: TextInputType.number,
+              keyboardType: TextInputType.text,
               textAlign: TextAlign.center,
               style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               maxLength: 6,

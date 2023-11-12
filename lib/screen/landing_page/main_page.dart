@@ -31,7 +31,7 @@ class MainPageState extends State<MainPage> {
       final alarmSettings = AlarmSettings(
         id: event.id,
         dateTime: alarmTime.add(const Duration(days: 7)),
-        assetAudioPath: 'assets/pony.mp3',
+        assetAudioPath: event.assetAudioPath,
         loopAudio: true,
         vibrate: true,
         volumeMax: false,

@@ -48,7 +48,7 @@ class AlarmController {
     final alarmSettings = AlarmSettings(
       id: alarmInfo.alarmId,
       dateTime: alarmTime,
-      assetAudioPath: 'assets/pony.mp3',
+      assetAudioPath: 'assets/long_blank.mp3',
       loopAudio: true,
       vibrate: true,
       volumeMax: false,
