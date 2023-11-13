@@ -61,7 +61,7 @@ class MainPageState extends State<MainPage> {
                   await Alarm.stop(event.id);
                   await Alarm.set(alarmSettings: alarmSettings);
                   Navigator.of(context).pop();
-                  AppLauncher().launchApp();
+                  await AppLauncher().launchApp();
                 },
               ),
             ],

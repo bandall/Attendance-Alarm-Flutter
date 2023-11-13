@@ -1,7 +1,7 @@
 import 'package:acha/model/alarm/alarm_controller.dart';
+import 'package:alarm/alarm.dart';
 import 'package:flutter/material.dart';
 
-import '../../model/alarm/alarm_info.dart';
 import '../component/app_bar.dart';
 
 class MainServicePage extends StatefulWidget {
@@ -12,20 +12,23 @@ class MainServicePage extends StatefulWidget {
 }
 
 class _MainServicePageState extends State<MainServicePage> {
-  void setAlarm() {
-    DateTime alarmTime =
-        DateTime.now().add(const Duration(minutes: 1, seconds: 10));
-    AlarmController().setAlarm(AlarmInfo(
-      alarmId: 1,
-      alarmGap: 0,
-      subjectId: 1,
-      memberId: 1,
-      isAlarmOn: true,
-      subjectName: '수학',
-      day: alarmTime.weekday - 1,
-      hour: alarmTime.hour,
-      minute: alarmTime.minute,
-    ));
+  void setAlarm() async {
+    DateTime alarmTime = DateTime.now().add(const Duration(seconds: 5));
+
+    final alarmSettings = AlarmSettings(
+      id: 1,
+      dateTime: alarmTime,
+      assetAudioPath: 'assets/long_blank.mp3',
+      loopAudio: true,
+      vibrate: true,
+      volumeMax: false,
+      fadeDuration: 2.0,
+      notificationTitle: '출석체크 하세요!!',
+      notificationBody: '[수업시간] 수학',
+      enableNotificationOnKill: true,
+      stopOnNotificationOpen: false,
+    );
+    await Alarm.set(alarmSettings: alarmSettings);
   }
 
   void getAlarm() {
