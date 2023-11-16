@@ -1,3 +1,4 @@
+import 'package:acha/model/alarm/alarm_controller.dart';
 import 'package:acha/model/alarm/alarm_info.dart';
 import 'package:acha/model/alarm/alarm_info_db.dart';
 import 'package:acha/provider/user_provider.dart';
@@ -30,7 +31,9 @@ class _AlarmEditPageState extends State<AlarmEditPage> {
   void _updateAlarmOn(int alarmId, int alarmGap, bool isAlarmOn,
       UserProvider userProvider) async {
     await AlarmInfoDb().updateAlarmOn(alarmId, isAlarmOn, alarmGap);
+    AlarmInfo alarmInfo = await AlarmInfoDb().getAlarm(alarmId);
     await ServiceApi().updateAlarm(alarmId, alarmGap, isAlarmOn, userProvider);
+    AlarmController().updateAlarm(alarmInfo);
   }
 
   @override
