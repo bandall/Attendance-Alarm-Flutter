@@ -15,6 +15,8 @@ class MainPage extends StatefulWidget {
 }
 
 class MainPageState extends State<MainPage> {
+  DateTime? lastPressed;
+
   @override
   void initState() {
     super.initState();
@@ -42,52 +44,73 @@ class MainPageState extends State<MainPage> {
         stopOnNotificationOpen: false,
       );
 
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20.0)),
-            title: Text(event.notificationTitle.toString(),
-                style: const TextStyle(color: Colors.black, fontSize: 24)),
-            content: Text(event.notificationBody.toString(),
-                style: const TextStyle(color: Colors.grey, fontSize: 18)),
-            actions: <Widget>[
-              TextButton(
-                child: const Text('확인',
-                    style: TextStyle(color: Colors.black, fontSize: 18)),
-                onPressed: () async {
-                  await Alarm.stop(event.id);
-                  await Alarm.set(alarmSettings: alarmSettings);
-                  Navigator.of(context).pop();
-                  await AppLauncher().launchApp();
-                },
-              ),
-            ],
-          );
-        },
-      );
+      try {
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20.0)),
+              title: Text(event.notificationTitle.toString(),
+                  style: const TextStyle(color: Colors.black, fontSize: 24)),
+              content: Text(event.notificationBody.toString(),
+                  style: const TextStyle(color: Colors.grey, fontSize: 18)),
+              actions: <Widget>[
+                TextButton(
+                  child: const Text('확인',
+                      style: TextStyle(color: Colors.black, fontSize: 18)),
+                  onPressed: () async {
+                    await Alarm.stop(event.id);
+                    await Alarm.set(alarmSettings: alarmSettings);
+                    Navigator.of(context).pop();
+                    await AppLauncher().launchApp();
+                  },
+                ),
+              ],
+            );
+          },
+        );
+      } catch (e) {
+        debugPrint(e.toString());
+      }
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Consumer<UserProvider>(
-        builder: (context, userProvider, child) {
-          if (!userProvider.isLoaded) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          } else {
-            if (userProvider.username != null) {
-              return const TabPage();
+    return WillPopScope(
+      onWillPop: () async {
+        final now = DateTime.now();
+        if (lastPressed == null ||
+            now.difference(lastPressed!) > const Duration(seconds: 2)) {
+          lastPressed = now;
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('앱을 종료하면 알람이 실행되지 않습니다.'),
+              duration: Duration(seconds: 2),
+            ),
+          );
+          return Future.value(false);
+        }
+        return Future.value(true);
+      },
+      child: Scaffold(
+        body: Consumer<UserProvider>(
+          builder: (context, userProvider, child) {
+            if (!userProvider.isLoaded) {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
             } else {
-              return const LoginPage();
+              if (userProvider.username != null) {
+                return const TabPage();
+              } else {
+                return const LoginPage();
+              }
             }
-          }
-        },
+          },
+        ),
       ),
     );
   }
