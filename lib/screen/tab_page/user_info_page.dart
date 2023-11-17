@@ -1,5 +1,6 @@
 import 'package:acha/model/api/login_api.dart';
 import 'package:acha/model/api/user_info_api.dart';
+import 'package:acha/screen/popup_page/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -14,8 +15,7 @@ class UserInfoPage extends StatefulWidget {
   State<UserInfoPage> createState() => _UserInfoPageState();
 }
 
-class _UserInfoPageState extends State<UserInfoPage>
-    with AutomaticKeepAliveClientMixin {
+class _UserInfoPageState extends State<UserInfoPage> {
   String username = '';
   String email = '';
   String userProfileImgUrl = 'images/placeholder.png';
@@ -36,7 +36,7 @@ class _UserInfoPageState extends State<UserInfoPage>
 
   void onLogoutPressed(UserProvider userProvider) async {
     try {
-      await LoginApi().logout();
+      LoginApi().logout();
     } catch (e) {}
     userProvider.deleteState(false);
   }
@@ -173,104 +173,138 @@ class _UserInfoPageState extends State<UserInfoPage>
     }
   }
 
-  void onDeleteUserPressed() async {}
+  void onDeleteUserPressed() async {
+    Assets().showErrorSnackBar(context, "삭제 기능 준비 중입니다.");
+  }
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
     final userProvider = Provider.of<UserProvider>(context);
     final screenSize = MediaQuery.of(context).size;
 
-    return Scaffold(
-      appBar: const CustomAppBar(title: 'User Information'),
-      backgroundColor: Colors.white,
-      body: Container(
-        padding: const EdgeInsets.all(16.0),
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Container(
-                width: screenSize.width * 0.80,
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(8),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.5),
-                      spreadRadius: 3,
-                      blurRadius: 7,
-                      offset: const Offset(0, 3),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    ClipOval(
-                      child: hasProfileImage
-                          ? Image.network(
-                              userProfileImgUrl,
-                              fit: BoxFit.cover,
-                              width: 100,
-                              height: 100,
-                            )
-                          : Image.asset(
-                              userProfileImgUrl,
-                              fit: BoxFit.cover,
-                              width: 100,
-                              height: 100,
-                            ),
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      username,
-                      style: const TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black87,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      email,
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: Colors.grey[700],
-                      ),
-                    ),
-                  ],
-                ),
+    if (username.isEmpty) {
+      return Scaffold(
+        appBar: const CustomAppBar(title: '사용자 정보'),
+        backgroundColor: Colors.white,
+        body: Center(
+          child: ElevatedButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const LoginPage()),
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              foregroundColor: Colors.white,
+              backgroundColor: Colors.blue, // 버튼의 전경색 (텍스트와 아이콘의 색상)
+              minimumSize: const Size(150, 50), // 버튼의 최소 크기
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10), // 버튼의 모서리를 둥글게
               ),
-              const SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  userInfoActionButton(
-                    onPressed: onDeleteUserPressed,
-                    backgroundColor: Colors.red,
-                    text: '계정 삭제',
-                    context: context,
-                  ),
-                  userInfoActionButton(
-                    onPressed: () => onEditInfoPressed(userProvider),
-                    backgroundColor: const Color(0xFF66ABF2),
-                    text: '정보 수정',
-                    context: context,
-                  ),
-                  userInfoActionButton(
-                    onPressed: () => onLogoutPressed(userProvider),
-                    backgroundColor: const Color.fromARGB(255, 255, 95, 95),
-                    text: '로그아웃',
-                    context: context,
+              padding: const EdgeInsets.all(15), // 버튼 내부의 패딩
+              textStyle: const TextStyle(
+                  fontSize: 20, fontWeight: FontWeight.bold), // 텍스트 스타일
+            ),
+            child: const Text('로그인 하세요'),
+          ),
+        ),
+      );
+    } else {
+      return Scaffold(
+        appBar: const CustomAppBar(title: '사용자 정보'),
+        backgroundColor: Colors.white,
+        body: userInfoWidget(userProvider, screenSize),
+      );
+    }
+  }
+
+  Widget userInfoWidget(userProvider, screenSize) {
+    return Container(
+      padding: const EdgeInsets.all(16.0),
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Container(
+              width: screenSize.width * 0.80,
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(8),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.5),
+                    spreadRadius: 3,
+                    blurRadius: 7,
+                    offset: const Offset(0, 3),
                   ),
                 ],
               ),
-            ],
-          ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  ClipOval(
+                    child: hasProfileImage
+                        ? Image.network(
+                            userProfileImgUrl,
+                            fit: BoxFit.cover,
+                            width: 100,
+                            height: 100,
+                          )
+                        : Image.asset(
+                            userProfileImgUrl,
+                            fit: BoxFit.cover,
+                            width: 100,
+                            height: 100,
+                          ),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    username,
+                    style: const TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    email,
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.grey[700],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                userInfoActionButton(
+                  onPressed: onDeleteUserPressed,
+                  backgroundColor: Colors.red,
+                  text: '계정 삭제',
+                  context: context,
+                ),
+                userInfoActionButton(
+                  onPressed: () => onEditInfoPressed(userProvider),
+                  backgroundColor: const Color(0xFF66ABF2),
+                  text: '정보 수정',
+                  context: context,
+                ),
+                userInfoActionButton(
+                  onPressed: () => onLogoutPressed(userProvider),
+                  backgroundColor: const Color.fromARGB(255, 255, 95, 95),
+                  text: '로그아웃',
+                  context: context,
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );
@@ -311,7 +345,4 @@ class _UserInfoPageState extends State<UserInfoPage>
       ),
     );
   }
-
-  @override
-  bool get wantKeepAlive => true;
 }

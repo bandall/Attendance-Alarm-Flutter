@@ -32,7 +32,7 @@ class _MainServicePageState extends State<MainServicePage> {
   }
 
   void getAlarm() {
-    AlarmController().getAlarms();
+    AlarmController().printAlarms();
   }
 
   void delteAlarm() {

@@ -9,7 +9,7 @@ import 'package:provider/provider.dart';
 
 import '../component/app_bar.dart';
 import '../component/assets.dart';
-import 'alarm_edit_page.dart';
+import '../alarm_page/alarm_edit_page.dart';
 
 class AlarmListPage extends StatefulWidget {
   const AlarmListPage({Key? key}) : super(key: key);
@@ -52,6 +52,7 @@ class _AlarmListPageState extends State<AlarmListPage> {
   // 시간표 등록 함수
   void _setTimeTable(String shareUrl, UserProvider userProvider) async {
     try {
+      _checkLogin(userProvider);
       await ServiceApi().setTimeTable(shareUrl, userProvider);
       _getAlarmsAndSetAlarmSchdule(userProvider);
     } catch (e) {
@@ -61,6 +62,7 @@ class _AlarmListPageState extends State<AlarmListPage> {
 
   void _getAlarmsAndSetAlarmSchdule(UserProvider userProvider) async {
     try {
+      _checkLogin(userProvider);
       List<AlarmInfo> alarms = await ServiceApi().getAllAlarms(userProvider);
       await AlarmController().deleteAll();
       await alarmDb.deleteAll();
@@ -72,6 +74,8 @@ class _AlarmListPageState extends State<AlarmListPage> {
         }
       }
 
+      AlarmController().printAlarms();
+
       _setAlarmList();
     } catch (e) {
       Assets().showErrorSnackBar(context, e.toString());
@@ -81,6 +85,7 @@ class _AlarmListPageState extends State<AlarmListPage> {
   void _updateAlarm(int alarmId, int alarmGap, bool isAlarmOn,
       UserProvider userProvider) async {
     try {
+      _checkLogin(userProvider);
       await alarmDb.updateAlarmOn(alarmId, isAlarmOn, alarmGap);
       AlarmInfo alarmInfo = await alarmDb.getAlarm(alarmId);
       AlarmController().updateAlarm(alarmInfo);
@@ -93,14 +98,21 @@ class _AlarmListPageState extends State<AlarmListPage> {
     }
   }
 
-  void _deleteAlarm(UserProvider userProvider) async {
+  void _deleteAllAlarm(UserProvider userProvider) async {
     try {
+      _checkLogin(userProvider);
       await AlarmController().deleteAll();
       await alarmDb.deleteAll();
       await ServiceApi().deleteTimetableAndAlarm(userProvider);
       _setAlarmList();
     } catch (e) {
       Assets().showErrorSnackBar(context, e.toString());
+    }
+  }
+
+  void _checkLogin(UserProvider userProvider) {
+    if (userProvider.username == null) {
+      throw Exception('로그인이 필요합니다.');
     }
   }
 
@@ -169,7 +181,7 @@ class _AlarmListPageState extends State<AlarmListPage> {
                   return Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
-                      "${_dayList[_alarmList[index + 1].day]}요일",
+                      "${_dayList[_alarmList[index].day]}요일",
                       style: const TextStyle(
                           fontSize: 20.0,
                           fontWeight: FontWeight.bold,
@@ -287,7 +299,14 @@ class _AlarmListPageState extends State<AlarmListPage> {
             child: const Icon(Icons.delete),
             label: '전체 삭제',
             onTap: () async {
-              _deleteAlarm(userProvider);
+              _deleteAllAlarm(userProvider);
+            },
+          ),
+          SpeedDialChild(
+            child: const Icon(Icons.add),
+            label: '알람 추가',
+            onTap: () async {
+              _deleteAllAlarm(userProvider);
             },
           ),
         ],

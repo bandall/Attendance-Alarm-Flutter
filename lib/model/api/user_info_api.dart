@@ -41,7 +41,7 @@ class UserInfoApi extends TokenApiUtils {
       throw TimeoutException(ExceptionMessage.SERVER_NOT_RESPONDING);
     });
 
-    isResponseSuccess(response);
+    await isResponseSuccess(response);
 
     final json = ApiResponse.fromJson(utf8.decode(response.bodyBytes));
     await userProvider.updateProfileImage(json.data['profileImageUrl']);
@@ -61,7 +61,7 @@ class UserInfoApi extends TokenApiUtils {
       throw TimeoutException(ExceptionMessage.SERVER_NOT_RESPONDING);
     });
 
-    isResponseSuccess(response);
+    await isResponseSuccess(response);
     await userProvider.updateUsername(newUsername);
   }
 
@@ -81,6 +81,6 @@ class UserInfoApi extends TokenApiUtils {
       throw TimeoutException(ExceptionMessage.SERVER_NOT_RESPONDING);
     });
 
-    isResponseSuccess(response);
+    await isResponseSuccess(response);
   }
 }

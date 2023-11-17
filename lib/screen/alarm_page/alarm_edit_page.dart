@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../model/api/service_api.dart';
+import '../component/assets.dart';
 
 class AlarmEditPage extends StatefulWidget {
   final AlarmInfo alarmInfo;
@@ -18,22 +19,47 @@ class AlarmEditPage extends StatefulWidget {
 }
 
 class _AlarmEditPageState extends State<AlarmEditPage> {
+  late int _alarmId;
   late int _alarmGap;
   late bool _isAlarmOn;
 
   @override
   void initState() {
     super.initState();
+    _alarmId = widget.alarmInfo.alarmId;
     _alarmGap = widget.alarmInfo.alarmGap;
     _isAlarmOn = widget.alarmInfo.isAlarmOn;
   }
 
-  void _updateAlarmOn(int alarmId, int alarmGap, bool isAlarmOn,
+  Future<void> _updateAlarmOn(int alarmId, int alarmGap, bool isAlarmOn,
       UserProvider userProvider) async {
-    await AlarmInfoDb().updateAlarmOn(alarmId, isAlarmOn, alarmGap);
-    AlarmInfo alarmInfo = await AlarmInfoDb().getAlarm(alarmId);
-    await ServiceApi().updateAlarm(alarmId, alarmGap, isAlarmOn, userProvider);
-    AlarmController().updateAlarm(alarmInfo);
+    try {
+      _check_login(userProvider);
+      await ServiceApi()
+          .updateAlarm(alarmId, alarmGap, isAlarmOn, userProvider);
+      await AlarmInfoDb().updateAlarmOn(alarmId, isAlarmOn, alarmGap);
+      AlarmInfo alarmInfo = await AlarmInfoDb().getAlarm(alarmId);
+      AlarmController().updateAlarm(alarmInfo);
+    } catch (e) {
+      Assets().showErrorSnackBar(context, e.toString());
+    }
+  }
+
+  Future<void> _deleteOneAlarm(UserProvider userProvider, int alarmId) async {
+    try {
+      _check_login(userProvider);
+      await AlarmController().deleteOneAlarm(alarmId);
+      await AlarmInfoDb().delete(alarmId);
+      await ServiceApi().deleteOneAlarm(alarmId, userProvider);
+    } catch (e) {
+      Assets().showErrorSnackBar(context, e.toString());
+    }
+  }
+
+  void _check_login(UserProvider userProvider) {
+    if (userProvider.username == null) {
+      throw Exception('로그인이 필요합니다.');
+    }
   }
 
   @override
@@ -120,8 +146,10 @@ class _AlarmEditPageState extends State<AlarmEditPage> {
                             child: const Text('확인',
                                 style: TextStyle(
                                     fontSize: 18, color: Colors.black)),
-                            onPressed: () {
-                              setState(() {});
+                            onPressed: () async {
+                              setState(() {
+                                _alarmGap = _alarmGap;
+                              });
                               Navigator.of(context).pop();
                             },
                           ),
@@ -131,33 +159,100 @@ class _AlarmEditPageState extends State<AlarmEditPage> {
                   );
                 },
               ),
-              Container(
-                margin: const EdgeInsets.symmetric(vertical: 20),
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {
-                    _updateAlarmOn(widget.alarmInfo.alarmId, _alarmGap,
-                        _isAlarmOn, userProvider);
-                    Navigator.pop(context);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.white,
-                    backgroundColor: Colors.blueGrey, // foreground
-                    padding: const EdgeInsets.symmetric(vertical: 15),
-                    textStyle: const TextStyle(
-                      fontSize: 20,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Container(
+                      margin: const EdgeInsets.symmetric(vertical: 20),
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          await _showDeleteConfirmationDialog(userProvider);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          foregroundColor: Colors.white,
+                          backgroundColor: Colors.red, // foreground
+                          padding: const EdgeInsets.symmetric(vertical: 15),
+                          textStyle: const TextStyle(
+                            fontSize: 20,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        child: const Text('삭제하기'),
+                      ),
                     ),
                   ),
-                  child: const Text('Save'),
-                ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Container(
+                      margin: const EdgeInsets.symmetric(vertical: 20),
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          await _updateAlarmOn(widget.alarmInfo.alarmId,
+                              _alarmGap, _isAlarmOn, userProvider);
+                          Navigator.of(context)
+                              .popUntil((route) => route.isFirst);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          foregroundColor: Colors.white,
+                          backgroundColor: Colors.blue.shade700, // foreground
+                          padding: const EdgeInsets.symmetric(vertical: 15),
+                          textStyle: const TextStyle(
+                            fontSize: 20,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        child: const Text('저장하기'),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  Future<void> _showDeleteConfirmationDialog(UserProvider userProvider) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Colors.white,
+          title: const Text('삭제 확인'),
+          content: const SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('정말로 이 알람을 삭제하시겠습니까?'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('취소'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('삭제'),
+              onPressed: () async {
+                await _deleteOneAlarm(userProvider, _alarmId);
+                Navigator.of(context).popUntil((route) => route.isFirst);
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }

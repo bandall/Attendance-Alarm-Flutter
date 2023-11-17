@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../provider/user_provider.dart';
-import '../login_page/login_page.dart';
 import '../tab_page/tab_page.dart';
 
 class MainPage extends StatefulWidget {
@@ -103,11 +102,7 @@ class MainPageState extends State<MainPage> {
                 child: CircularProgressIndicator(),
               );
             } else {
-              if (userProvider.username != null) {
-                return const TabPage();
-              } else {
-                return const LoginPage();
-              }
+              return const TabPage();
             }
           },
         ),

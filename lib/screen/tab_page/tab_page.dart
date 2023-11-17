@@ -1,14 +1,11 @@
-import 'dart:async';
-
-import 'package:acha/model/api/user_info_api.dart';
 import 'package:acha/screen/tab_page/alarm_list_page.dart';
+import 'package:acha/screen/tab_page/timetable_join_page.dart';
 import 'package:acha/screen/tab_page/user_info_page.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:provider/provider.dart';
 
 import '../../provider/user_provider.dart';
-import '../component/assets.dart';
+import '../popup_page/login_page.dart';
 import 'main_service_page.dart';
 
 class TabPage extends StatefulWidget {
@@ -19,17 +16,14 @@ class TabPage extends StatefulWidget {
 }
 
 class _TabPageState extends State<TabPage> with SingleTickerProviderStateMixin {
-  final FlutterSecureStorage _storage = const FlutterSecureStorage();
-  late bool _isTableSetted;
-  late String tableId;
   final List<Tab> _tabs = const [
-    Tab(icon: Icon(Icons.home), text: 'Home'),
-    Tab(icon: Icon(Icons.account_circle), text: 'Main Service'),
-    Tab(icon: Icon(Icons.person), text: 'User Info'),
+    Tab(icon: Icon(Icons.home), text: '알람'),
+    Tab(icon: Icon(Icons.handyman), text: '테스트'),
+    Tab(icon: Icon(Icons.view_timeline), text: '공강'),
+    Tab(icon: Icon(Icons.person), text: '유저 정보'),
   ];
 
   late TabController _tabController;
-  StreamSubscription? _subscription;
 
   @override
   void initState() {
@@ -37,33 +31,27 @@ class _TabPageState extends State<TabPage> with SingleTickerProviderStateMixin {
     _tabController = TabController(length: _tabs.length, vsync: this);
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       final userProvider = Provider.of<UserProvider>(context, listen: false);
-      try {
-        await UserInfoApi().getUserInfo(userProvider);
-      } on TimeoutException catch (e) {
-        Assets().showErrorSnackBar(context, e.message);
-      } catch (e) {
-        return;
+      if (userProvider.username == null) {
+        _tabController.index = 2;
       }
     });
-    // initTable();
-  }
-
-  @override
-  void dispose() {
-    _subscription?.cancel();
-    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final userProvider = context.watch<UserProvider>();
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       backgroundColor: Colors.white,
       body: TabBarView(
         controller: _tabController,
-        children: const [
-          AlarmListPage(),
-          MainServicePage(),
-          UserInfoPage(),
+        children: [
+          const AlarmListPage(),
+          const MainServicePage(),
+          const TimeTableJoinPage(),
+          userProvider.username != null
+              ? const UserInfoPage()
+              : const LoginPage(),
         ],
       ),
       bottomNavigationBar: Container(

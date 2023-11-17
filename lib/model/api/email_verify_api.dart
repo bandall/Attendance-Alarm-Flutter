@@ -34,6 +34,6 @@ class EmailVerifyApi extends TokenApiUtils {
       throw TimeoutException(ExceptionMessage.SERVER_NOT_RESPONDING);
     });
 
-    isResponseSuccess(response);
+    await isResponseSuccess(response);
   }
 }

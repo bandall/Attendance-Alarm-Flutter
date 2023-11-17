@@ -6,8 +6,6 @@ import 'alarm_info.dart';
 class AlarmController {
   Future<void> setAlarm(AlarmInfo alarmInfo) async {
     var alarmTime = getAlarmTime(alarmInfo);
-    print(alarmInfo.subjectName);
-    print(alarmTime);
     setAlarmScehduler(alarmInfo, alarmTime);
   }
 
@@ -17,7 +15,7 @@ class AlarmController {
       var alarmTime = getAlarmTime(alarmInfo);
       setAlarmScehduler(alarmInfo, alarmTime);
     }
-    getAlarms();
+    printAlarms();
   }
 
   DateTime getAlarmTime(AlarmInfo alarmInfo) {
@@ -44,6 +42,10 @@ class AlarmController {
     return alarmDateTime.subtract(Duration(minutes: alarmInfo.alarmGap));
   }
 
+  Future<void> deleteOneAlarm(int alarmId) async {
+    await Alarm.stop(alarmId);
+  }
+
   void setAlarmScehduler(AlarmInfo alarmInfo, DateTime alarmTime) async {
     final alarmSettings = AlarmSettings(
       id: alarmInfo.alarmId,
@@ -61,16 +63,11 @@ class AlarmController {
     await Alarm.set(alarmSettings: alarmSettings);
   }
 
-  Future<void> deleteAlarm(AlarmInfo alarmInfo) async {
-    await Alarm.stop(alarmInfo.alarmId);
-    getAlarms();
-  }
-
   Future<void> deleteAll() async {
     await Alarm.stopAll();
   }
 
-  void getAlarms() {
+  void printAlarms() {
     var alarms = Alarm.getAlarms();
     debugPrint(alarms.length.toString());
     for (var alarm in alarms) {

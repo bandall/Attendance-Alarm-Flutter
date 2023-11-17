@@ -4,7 +4,6 @@ import 'package:acha/provider/user_provider.dart';
 import 'package:acha/screen/landing_page/main_page.dart';
 import 'package:alarm/alarm.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 
@@ -13,8 +12,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load();
   await Alarm.init();
-  SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
-      overlays: [SystemUiOverlay.bottom]);
+
   runApp(
     MultiProvider(
       providers: [
