@@ -21,7 +21,65 @@ class EmptyTimePage extends StatelessWidget {
         timetableStyle: const TimetableStyle(
             laneWidth: 45, timeItemHeight: 30, timeItemWidth: 65),
         onEmptySlotTap: onTimeSlotTappedCallBack,
-        onEventTap: onEventTapCallBack,
+        onEventTap: (TableEvent event) {
+          showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                backgroundColor: Colors.white,
+                title: const Text(
+                  'Event Details',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(
+                      '날짜: ${_getDayName(event.laneIndex)}',
+                      style: const TextStyle(
+                        color: Colors.black87,
+                        fontSize: 18,
+                      ),
+                    ),
+                    Text(
+                      '시작 시간: ${event.startTime.hour}:${event.startTime.minute}',
+                      style: const TextStyle(
+                        color: Colors.black87,
+                        fontSize: 18,
+                      ),
+                    ),
+                    Text(
+                      '종료 시간: ${event.endTime.hour}:${event.endTime.minute}',
+                      style: const TextStyle(
+                        color: Colors.black87,
+                        fontSize: 18,
+                      ),
+                    ),
+                  ],
+                ),
+                actions: <Widget>[
+                  TextButton(
+                    child: const Text(
+                      '확인',
+                      style: TextStyle(
+                        color: Colors.blueAccent,
+                        fontSize: 18,
+                      ),
+                    ),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              );
+            },
+          );
+        },
       ),
     );
   }
@@ -64,7 +122,26 @@ class EmptyTimePage extends StatelessWidget {
     );
   }
 
-  void onEventTapCallBack(TableEvent event) {}
+  String _getDayName(int laneIndex) {
+    switch (laneIndex) {
+      case 1:
+        return '월요일';
+      case 2:
+        return '화요일';
+      case 3:
+        return '수요일';
+      case 4:
+        return '목요일';
+      case 5:
+        return '금요일';
+      case 6:
+        return '토요일';
+      case 7:
+        return '일요일';
+      default:
+        throw Exception('Invalid laneIndex: $laneIndex');
+    }
+  }
 
   void onTimeSlotTappedCallBack(
       int laneIndex, TableEventTime start, TableEventTime end) {}
