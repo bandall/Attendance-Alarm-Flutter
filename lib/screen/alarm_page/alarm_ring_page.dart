@@ -27,7 +27,7 @@ class AlarmRingPage extends StatelessWidget {
 
     await Alarm.stop(event.id);
     await Alarm.set(alarmSettings: alarmSettings);
-    await AppLauncher().launchApp();
+    await AppLauncher().launchAjouApp();
 
     Navigator.pushReplacement(
       context,

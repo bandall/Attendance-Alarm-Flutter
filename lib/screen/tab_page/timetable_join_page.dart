@@ -59,7 +59,7 @@ class _TimeTableJoinPageState extends State<TimeTableJoinPage> {
 
     for (var controller in _emailControllers) {
       if (controller.text == "") {
-        Assets().showErrorSnackBar(context, "아이디를 입력해주세요.");
+        Assets().showErrorSnackBar(context, "이메일를 입력해주세요.");
         return;
       }
       final email = controller.text;
@@ -75,6 +75,7 @@ class _TimeTableJoinPageState extends State<TimeTableJoinPage> {
       Assets().showErrorSnackBar(context, e.toString());
       return;
     }
+
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -103,7 +104,7 @@ class _TimeTableJoinPageState extends State<TimeTableJoinPage> {
                         const Padding(
                           padding: EdgeInsets.only(bottom: 8.0),
                           child: Text(
-                            '아이디를 입력해주세요',
+                            '이메일를 입력해주세요',
                             style: TextStyle(
                               fontSize: 20.0,
                               fontWeight: FontWeight.bold,
@@ -170,7 +171,7 @@ class _TimeTableJoinPageState extends State<TimeTableJoinPage> {
                             children: <Widget>[
                               Icon(Icons.add),
                               SizedBox(width: 8.0),
-                              Text('아이디 추가'),
+                              Text('이메일 추가'),
                             ],
                           ),
                         ),
@@ -222,7 +223,7 @@ class _TimeTableJoinPageState extends State<TimeTableJoinPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const CustomAppBar(
-        title: '공간 시간 찾기',
+        title: '공강 시간 찾기',
         backButton: false,
       ),
       body: buildEmailField(),

@@ -35,8 +35,11 @@ dependencies:
   flutter_secure_storage: ^8.0.0
   jwt_decoder: ^2.0.1
   provider: ^6.0.5
-  alarm: ^1.2.2
-  #    path: ../packages/alarm-flutter-plugin/
+  # alarm: ^1.2.2
+  alarm:
+    git:
+      url: https://github.com/gdelataillade/alarm.git
+      ref: main
   flutter_dotenv: ^5.1.0
 
   # The following adds the Cupertino Icons font to your application.

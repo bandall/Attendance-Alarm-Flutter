@@ -43,6 +43,8 @@ class MainPageState extends State<MainPage> {
         stopOnNotificationOpen: false,
       );
 
+      AppLauncher().launchMyApp();
+
       try {
         showDialog(
           context: context,
@@ -63,7 +65,7 @@ class MainPageState extends State<MainPage> {
                     await Alarm.stop(event.id);
                     await Alarm.set(alarmSettings: alarmSettings);
                     Navigator.of(context).pop();
-                    await AppLauncher().launchApp();
+                    await AppLauncher().launchAjouApp();
                   },
                 ),
               ],
