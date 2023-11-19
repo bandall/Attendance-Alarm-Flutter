@@ -93,7 +93,7 @@ class MainPageState extends State<MainPage> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               backgroundColor: Colors.red.shade400,
-              content: const Text('앱을 종료하면 알람이 실행되지 않습니다.'),
+              content: const Text('앱을 종료하면 알람이 실행되지 않습니다.\n홈 버튼으로 나가주세요.'),
               duration: const Duration(seconds: 2),
             ),
           );

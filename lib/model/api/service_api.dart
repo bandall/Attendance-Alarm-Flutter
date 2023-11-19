@@ -51,27 +51,30 @@ class ServiceApi extends TokenApiUtils {
     return alarms;
   }
 
-  // Future<void> setAlarm(AlarmInfo alarmInfo,
-  //     UserProvider userProvider) async {
-  //   await checkLoginStatus(userProvider);
-  //   final url = Uri.parse('$serviceServerUrl/alarm/update');
+  Future<void> saveAlarm(AlarmInfo alarmInfo, UserProvider userProvider) async {
+    await checkLoginStatus(userProvider);
+    final url = Uri.parse('$serviceServerUrl/alarm/save');
 
-  //   Map<String, dynamic> body = {
-  //     "subjectId": alarmId,
-  //     "day": alarmGap,
-  //     "hour": isAlarmOn,
-  //   };
+    Map<String, dynamic> body = {
+      "subjectId": -1,
+      "name": alarmInfo.subjectName,
+      "day": alarmInfo.day,
+      "hour": alarmInfo.hour,
+      "minute": alarmInfo.minute,
+      "alarmGap": alarmInfo.alarmGap,
+      "isAlarmOn": alarmInfo.isAlarmOn,
+    };
 
-  //   final response = await http
-  //       .post(url,
-  //           headers: await getHeaders(authRequired: true),
-  //           body: jsonEncode(body))
-  //       .timeout(timoutTime, onTimeout: () {
-  //     throw TimeoutException(ExceptionMessage.SERVER_NOT_RESPONDING);
-  //   });
+    final response = await http
+        .post(url,
+            headers: await getHeaders(authRequired: true),
+            body: jsonEncode(body))
+        .timeout(timoutTime, onTimeout: () {
+      throw TimeoutException(ExceptionMessage.SERVER_NOT_RESPONDING);
+    });
 
-  //   isResponseSuccessWithProvider(response, userProvider);
-  // }
+    isResponseSuccessWithProvider(response, userProvider);
+  }
 
   Future<void> updateAlarm(int alarmId, int alarmGap, bool isAlarmOn,
       UserProvider userProvider) async {

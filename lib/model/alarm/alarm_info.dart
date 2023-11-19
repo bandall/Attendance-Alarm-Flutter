@@ -61,4 +61,9 @@ class AlarmInfo {
       'subjectName': subjectName,
     };
   }
+
+  @override
+  String toString() {
+    return 'AlarmInfo { alarmId: $alarmId, memberId: $memberId, day: $day, hour: $hour, minute: $minute, alarmGap: $alarmGap, isAlarmOn: $isAlarmOn, subjectId: $subjectId, subjectName: $subjectName }';
+  }
 }

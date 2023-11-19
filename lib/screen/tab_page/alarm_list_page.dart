@@ -3,6 +3,7 @@ import 'package:acha/model/alarm/alarm_info.dart';
 import 'package:acha/model/alarm/alarm_info_db.dart';
 import 'package:acha/model/api/service_api.dart';
 import 'package:acha/provider/user_provider.dart';
+import 'package:acha/screen/alarm_page/new_alarm_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:provider/provider.dart';
@@ -44,9 +45,11 @@ class _AlarmListPageState extends State<AlarmListPage> {
       return a.day.compareTo(b.day);
     });
 
-    setState(() {
-      _alarmList = updatedList;
-    });
+    if (mounted) {
+      setState(() {
+        _alarmList = updatedList;
+      });
+    }
   }
 
   // 시간표 등록 함수
@@ -77,6 +80,24 @@ class _AlarmListPageState extends State<AlarmListPage> {
       AlarmController().printAlarms();
 
       _setAlarmList();
+    } catch (e) {
+      Assets().showErrorSnackBar(context, e.toString());
+    }
+  }
+
+  void _addNewAlarm(UserProvider userProvider) async {
+    try {
+      _checkLogin(userProvider);
+
+      var isAdded =
+          await Navigator.push(context, MaterialPageRoute(builder: (context) {
+        return const AddAlarmPage();
+      }));
+
+      if (isAdded == null || isAdded == false) {
+        return;
+      }
+      _getAlarmsAndSetAlarmSchdule(userProvider);
     } catch (e) {
       Assets().showErrorSnackBar(context, e.toString());
     }
@@ -123,11 +144,11 @@ class _AlarmListPageState extends State<AlarmListPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('알람 등록'),
+          title: const Text('알림 등록'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              const Text('알람에 사용할 URL을 입력해주세요.'),
+              const Text('알림에 사용할 URL을 입력해주세요.'),
               TextField(
                 controller: urlController,
                 decoration: const InputDecoration(
@@ -196,7 +217,7 @@ class _AlarmListPageState extends State<AlarmListPage> {
                 if (_alarmList.isEmpty) {
                   return const Center(
                     child: Text(
-                      "알람이 없습니다",
+                      "",
                       style: TextStyle(
                         fontSize: 20.0, // 텍스트 크기
                         color: Colors.black87, // 텍스트 색상
@@ -273,20 +294,48 @@ class _AlarmListPageState extends State<AlarmListPage> {
                 );
               },
             ),
-            if (_alarmList.isEmpty) // 알람이 설정되지 않았을 때만 보여주기
+            if (_alarmList.isEmpty)
               Center(
-                child: ElevatedButton(
-                  onPressed: () {
-                    try {
-                      _checkLogin(userProvider);
-                      _showAddAlarmDialog();
-                    } catch (e) {
-                      Assets().showErrorSnackBar(context, e.toString());
-                    }
-                  },
-                  child: const Text('알람 등록하기'),
-                ),
-              ),
+                  child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  const Text(
+                    "알림이 없습니다", // 텍스트 내용
+                    style: TextStyle(
+                      fontSize: 24.0, // 텍스트 크기
+                      color: Colors.black87, // 텍스트 색상
+                      fontWeight: FontWeight.w500, // 텍스트 가중치
+                      letterSpacing: 0.5, // 문자 간 거리
+                    ),
+                  ),
+                  const SizedBox(height: 20), // 텍스트와 버튼 사이의 간격
+                  ElevatedButton.icon(
+                    onPressed: () {
+                      try {
+                        _checkLogin(userProvider);
+                        _showAddAlarmDialog();
+                      } catch (e) {
+                        Assets().showErrorSnackBar(context, e.toString());
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: Colors.white,
+                      backgroundColor: Colors.blue, // 아이콘 및 레이블 색상
+                      minimumSize: const Size(200, 50), // 버튼 크기
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10), // 버튼 모서리 둥글게
+                      ),
+                    ),
+                    icon: const Icon(Icons.alarm_add), // 아이콘
+                    label: const Text(
+                      '에브리타임으로 일괄 등록하기', // 레이블 텍스트
+                      style: TextStyle(
+                        fontSize: 18, // 텍스트 크기
+                      ),
+                    ),
+                  ),
+                ],
+              )),
           ],
         ),
       ),
@@ -309,9 +358,9 @@ class _AlarmListPageState extends State<AlarmListPage> {
           ),
           SpeedDialChild(
             child: const Icon(Icons.add),
-            label: '알람 추가',
+            label: '알림 추가',
             onTap: () async {
-              _deleteAllAlarm(userProvider);
+              _addNewAlarm(userProvider);
             },
           ),
         ],

@@ -21,15 +21,15 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         child: Container(
           decoration: const BoxDecoration(color: Colors.blueAccent),
           child: Stack(
-            alignment: Alignment.center, // 제목을 가운데로 정렬
+            alignment: Alignment.center,
             children: [
-              if (backButton) // 뒤로가기 버튼이 필요할 경우
+              if (backButton)
                 Positioned(
-                  left: 0, // 뒤로가기 버튼을 왼쪽으로 정렬
+                  left: 0,
                   child: IconButton(
                     icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
                     onPressed: () {
-                      Navigator.pop(context);
+                      Navigator.pop(context, false);
                     },
                   ),
                 ),

@@ -5,6 +5,7 @@ import 'package:acha/screen/landing_page/main_page.dart';
 import 'package:alarm/alarm.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
@@ -12,6 +13,18 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load();
   await Alarm.init(showDebugLogs: false);
+
+  PermissionStatus notificationStatus = await Permission.notification.status;
+  if (!notificationStatus.isGranted) {
+    await Permission.notification.request();
+  }
+
+  PermissionStatus batteryStatus =
+      await Permission.ignoreBatteryOptimizations.status;
+  debugPrint(batteryStatus.toString());
+  if (!batteryStatus.isGranted) {
+    await Permission.ignoreBatteryOptimizations.request();
+  }
 
   runApp(
     MultiProvider(
