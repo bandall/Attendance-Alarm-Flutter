@@ -277,7 +277,12 @@ class _AlarmListPageState extends State<AlarmListPage> {
               Center(
                 child: ElevatedButton(
                   onPressed: () {
-                    _showAddAlarmDialog();
+                    try {
+                      _checkLogin(userProvider);
+                      _showAddAlarmDialog();
+                    } catch (e) {
+                      Assets().showErrorSnackBar(context, e.toString());
+                    }
                   },
                   child: const Text('알람 등록하기'),
                 ),

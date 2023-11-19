@@ -11,7 +11,7 @@ void main() async {
   HttpOverrides.global = MyHttpOverrides();
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load();
-  await Alarm.init();
+  await Alarm.init(showDebugLogs: false);
 
   runApp(
     MultiProvider(

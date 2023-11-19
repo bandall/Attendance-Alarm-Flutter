@@ -80,16 +80,21 @@ class MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (bool didpop) async {
+        if (didpop) {
+          return;
+        }
         final now = DateTime.now();
         if (lastPressed == null ||
             now.difference(lastPressed!) > const Duration(seconds: 2)) {
           lastPressed = now;
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('앱을 종료하면 알람이 실행되지 않습니다.'),
-              duration: Duration(seconds: 2),
+            SnackBar(
+              backgroundColor: Colors.red.shade400,
+              content: const Text('앱을 종료하면 알람이 실행되지 않습니다.'),
+              duration: const Duration(seconds: 2),
             ),
           );
           return Future.value(false);
