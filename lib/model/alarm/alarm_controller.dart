@@ -53,12 +53,10 @@ class AlarmController {
       assetAudioPath: 'assets/long_blank.mp3',
       loopAudio: true,
       vibrate: true,
-      volumeMax: false,
       fadeDuration: 2.0,
       notificationTitle: '출석체크 하세요!!',
       notificationBody: '[수업시간] ${alarmInfo.subjectName}',
       enableNotificationOnKill: true,
-      stopOnNotificationOpen: false,
     );
     await Alarm.set(alarmSettings: alarmSettings);
   }

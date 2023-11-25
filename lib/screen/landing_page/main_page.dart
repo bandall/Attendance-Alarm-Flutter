@@ -35,12 +35,10 @@ class MainPageState extends State<MainPage> {
         assetAudioPath: event.assetAudioPath,
         loopAudio: true,
         vibrate: true,
-        volumeMax: false,
         fadeDuration: 2.0,
         notificationTitle: event.notificationTitle,
         notificationBody: event.notificationBody,
         enableNotificationOnKill: true,
-        stopOnNotificationOpen: false,
       );
 
       AppLauncher().launchMyApp();

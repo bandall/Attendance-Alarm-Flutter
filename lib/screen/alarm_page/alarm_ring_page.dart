@@ -17,12 +17,10 @@ class AlarmRingPage extends StatelessWidget {
       assetAudioPath: event.assetAudioPath,
       loopAudio: true,
       vibrate: false,
-      volumeMax: false,
       fadeDuration: 2.0,
       notificationTitle: event.notificationTitle,
       notificationBody: event.notificationBody,
       enableNotificationOnKill: true,
-      stopOnNotificationOpen: false,
     );
 
     await Alarm.stop(event.id);
@@ -39,7 +37,7 @@ class AlarmRingPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(
-        title: event.notificationTitle!,
+        title: event.notificationTitle,
       ),
       body: Center(
         child: Padding(
@@ -51,7 +49,7 @@ class AlarmRingPage extends StatelessWidget {
                 children: [
                   const Text('과목명'), // 과목명 설명 추가
                   Text(
-                    event.notificationBody!,
+                    event.notificationBody,
                     style: const TextStyle(
                         fontSize: 24, fontWeight: FontWeight.bold),
                     textAlign: TextAlign.center,
