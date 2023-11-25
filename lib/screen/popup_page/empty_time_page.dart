@@ -28,7 +28,7 @@ class EmptyTimePage extends StatelessWidget {
               return AlertDialog(
                 backgroundColor: Colors.white,
                 title: const Text(
-                  'Event Details',
+                  '공통 공강 시간',
                   style: TextStyle(
                     color: Colors.black,
                     fontSize: 24,
@@ -47,14 +47,14 @@ class EmptyTimePage extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      '시작 시간: ${event.startTime.hour}:${event.startTime.minute}',
+                      '시작 시간: ${event.startTime.hour.toString().padLeft(2, '0')}:${event.startTime.minute.toString().padLeft(2, '0')}',
                       style: const TextStyle(
                         color: Colors.black87,
                         fontSize: 18,
                       ),
                     ),
                     Text(
-                      '종료 시간: ${event.endTime.hour}:${event.endTime.minute}',
+                      '종료 시간: ${event.endTime.hour.toString().padLeft(2, '0')}:${event.endTime.minute.toString().padLeft(2, '0')}',
                       style: const TextStyle(
                         color: Colors.black87,
                         fontSize: 18,

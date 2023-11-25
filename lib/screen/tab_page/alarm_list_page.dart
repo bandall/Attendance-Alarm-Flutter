@@ -19,6 +19,7 @@ class AlarmListPage extends StatefulWidget {
   State<AlarmListPage> createState() => _AlarmListPageState();
 }
 
+// 시간표 등록 안되어 있으면 알림 추가 못하게 하기
 class _AlarmListPageState extends State<AlarmListPage> {
   List<AlarmInfo> _alarmList = [];
   AlarmInfoDb alarmDb = AlarmInfoDb();
@@ -111,8 +112,7 @@ class _AlarmListPageState extends State<AlarmListPage> {
       AlarmInfo alarmInfo = await alarmDb.getAlarm(alarmId);
       AlarmController().updateAlarm(alarmInfo);
 
-      await ServiceApi()
-          .updateAlarm(alarmId, alarmGap, isAlarmOn, userProvider);
+      ServiceApi().updateAlarm(alarmId, alarmGap, isAlarmOn, userProvider);
       _setAlarmList();
     } catch (e) {
       Assets().showErrorSnackBar(context, e.toString());
@@ -124,7 +124,7 @@ class _AlarmListPageState extends State<AlarmListPage> {
       _checkLogin(userProvider);
       await AlarmController().deleteAll();
       await alarmDb.deleteAll();
-      await ServiceApi().deleteTimetableAndAlarm(userProvider);
+      ServiceApi().deleteTimetableAndAlarm(userProvider);
       _setAlarmList();
     } catch (e) {
       Assets().showErrorSnackBar(context, e.toString());
