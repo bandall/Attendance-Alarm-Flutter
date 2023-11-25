@@ -69,11 +69,14 @@ class _TimeTableJoinPageState extends State<TimeTableJoinPage> {
     WeeklySchedule? weeklySchedule;
 
     try {
+      Assets().showLoadingDialog(context, "공강 시간을 찾는 중입니다.");
       weeklySchedule =
           await ServiceApi().getWeeklySchedule(userProvider, emails);
     } catch (e) {
       Assets().showErrorSnackBar(context, e.toString());
       return;
+    } finally {
+      Navigator.pop(context);
     }
 
     Navigator.push(

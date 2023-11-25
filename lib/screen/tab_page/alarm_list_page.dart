@@ -55,12 +55,15 @@ class _AlarmListPageState extends State<AlarmListPage> {
 
   // 시간표 등록 함수
   void _setTimeTable(String shareUrl, UserProvider userProvider) async {
+    Assets().showLoadingDialog(context, "등록 중..");
     try {
       _checkLogin(userProvider);
       await ServiceApi().setTimeTable(shareUrl, userProvider);
       _getAlarmsAndSetAlarmSchdule(userProvider);
     } catch (e) {
       Assets().showErrorSnackBar(context, e.toString());
+    } finally {
+      Navigator.pop(context);
     }
   }
 
@@ -81,6 +84,7 @@ class _AlarmListPageState extends State<AlarmListPage> {
       AlarmController().printAlarms();
 
       _setAlarmList();
+      Assets().showSnackBar(context, '동기화 완료');
     } catch (e) {
       Assets().showErrorSnackBar(context, e.toString());
     }
@@ -99,6 +103,7 @@ class _AlarmListPageState extends State<AlarmListPage> {
         return;
       }
       _getAlarmsAndSetAlarmSchdule(userProvider);
+      Assets().showSnackBar(context, '알람 추가 완료');
     } catch (e) {
       Assets().showErrorSnackBar(context, e.toString());
     }
@@ -126,6 +131,7 @@ class _AlarmListPageState extends State<AlarmListPage> {
       await alarmDb.deleteAll();
       ServiceApi().deleteTimetableAndAlarm(userProvider);
       _setAlarmList();
+      Assets().showSnackBar(context, '전체 삭제 되었습니다.');
     } catch (e) {
       Assets().showErrorSnackBar(context, e.toString());
     }
@@ -169,9 +175,9 @@ class _AlarmListPageState extends State<AlarmListPage> {
               child: const Text('등록'),
               onPressed: () {
                 String url = urlController.text;
+                Navigator.of(context).pop();
                 _setTimeTable(
                     url, Provider.of<UserProvider>(context, listen: false));
-                Navigator.of(context).pop();
               },
             ),
           ],
