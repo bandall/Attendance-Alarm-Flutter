@@ -1,4 +1,7 @@
 import 'package:acha/model/alarm/alarm_controller.dart';
+import 'package:acha/model/alarm/alarm_info.dart';
+import 'package:acha/model/alarm/alarm_info_db.dart';
+import 'package:acha/screen/component/assets.dart';
 import 'package:alarm/alarm.dart';
 import 'package:flutter/material.dart';
 
@@ -12,6 +15,9 @@ class MainServicePage extends StatefulWidget {
 }
 
 class _MainServicePageState extends State<MainServicePage> {
+  List<AlarmSettings>? alarms;
+  List<AlarmInfo>? alarmsInDb;
+
   void setAlarm() async {
     DateTime alarmTime = DateTime.now().add(const Duration(seconds: 5));
 
@@ -29,12 +35,21 @@ class _MainServicePageState extends State<MainServicePage> {
     await Alarm.set(alarmSettings: alarmSettings);
   }
 
-  void getAlarm() {
-    AlarmController().printAlarms();
+  void getDbAlarm() async {
+    alarmsInDb = await AlarmInfoDb().getAllAlarms();
+    alarms = null;
+    setState(() {});
   }
 
-  void delteAlarm() {
-    AlarmController().deleteAll();
+  void getAlarm() async {
+    alarms = Alarm.getAlarms();
+    alarmsInDb = null;
+    setState(() {});
+  }
+
+  void deleteAlarm() async {
+    await AlarmController().deleteAll();
+    Assets().showSnackBar(context, '삭제완료!');
   }
 
   @override
@@ -44,96 +59,137 @@ class _MainServicePageState extends State<MainServicePage> {
       backgroundColor: Colors.white,
       body: Container(
         padding: const EdgeInsets.all(16.0),
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const Icon(
-                Icons.construction,
-                size: 60,
-                color: Colors.black87,
-              ),
-              const SizedBox(height: 16),
-              const Text(
-                '메인 서비스 개발 예정',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            const Icon(
+              Icons.construction,
+              size: 60,
+              color: Colors.black87,
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () {
+                getDbAlarm();
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Theme.of(context).primaryColor,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
                 ),
               ),
-              const SizedBox(height: 8),
-              const Text(
-                'Main service will be available soon!',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontStyle: FontStyle.italic,
-                  color: Colors.black54,
+              child: const Padding(
+                padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0),
+                child: Text(
+                  "Db AlarmInfo",
+                  style: TextStyle(fontSize: 18, color: Colors.white),
                 ),
               ),
-              const SizedBox(height: 24),
-              ElevatedButton(
-                onPressed: () {
-                  setAlarm();
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context).primaryColor,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-                child: const Padding(
-                  padding:
-                      EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0),
-                  child: Text(
-                    "Set Alarm",
-                    style: TextStyle(fontSize: 18, color: Colors.white),
-                  ),
+            ),
+            const SizedBox(height: 8),
+            ElevatedButton(
+              onPressed: () {
+                setAlarm();
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Theme.of(context).primaryColor,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
                 ),
               ),
-              const SizedBox(height: 8),
-              ElevatedButton(
-                onPressed: () {
-                  getAlarm();
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context).primaryColor,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-                child: const Padding(
-                  padding:
-                      EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0),
-                  child: Text(
-                    "Get Alarm",
-                    style: TextStyle(fontSize: 18, color: Colors.white),
-                  ),
+              child: const Padding(
+                padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0),
+                child: Text(
+                  "Set Alarm",
+                  style: TextStyle(fontSize: 18, color: Colors.white),
                 ),
               ),
-              const SizedBox(height: 8),
-              ElevatedButton(
-                onPressed: () {
-                  delteAlarm();
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context).primaryColor,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-                child: const Padding(
-                  padding:
-                      EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0),
-                  child: Text(
-                    "Delete Alarm",
-                    style: TextStyle(fontSize: 18, color: Colors.white),
-                  ),
+            ),
+            const SizedBox(height: 8),
+            ElevatedButton(
+              onPressed: () {
+                getAlarm();
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Theme.of(context).primaryColor,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
                 ),
               ),
-            ],
-          ),
+              child: const Padding(
+                padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0),
+                child: Text(
+                  "Get Alarm",
+                  style: TextStyle(fontSize: 18, color: Colors.white),
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+            ElevatedButton(
+              onPressed: () {
+                deleteAlarm();
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Theme.of(context).primaryColor,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              child: const Padding(
+                padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0),
+                child: Text(
+                  "Delete Alarm",
+                  style: TextStyle(fontSize: 18, color: Colors.white),
+                ),
+              ),
+            ),
+            const SizedBox(height: 24),
+            alarms != null
+                ? Expanded(
+                    child: ListView.builder(
+                      itemCount: alarms?.length ?? 0,
+                      itemBuilder: (context, index) {
+                        final alarm = alarms![index];
+                        return ListTile(
+                          title: Text('Alarm ${index + 1}'),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Day: ${alarm.dateTime.weekday - 1}'),
+                              Text(
+                                  'Time: ${alarm.dateTime.hour}:${alarm.dateTime.minute}'),
+                              Text('Subject Name: ${alarm.notificationBody}'),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+                  )
+                : Expanded(
+                    child: ListView.builder(
+                      itemCount: alarmsInDb?.length ?? 0,
+                      itemBuilder: (context, index) {
+                        final alarm = alarmsInDb![index];
+                        return ListTile(
+                          title: Text('Alarm ${index + 1}'),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Time: ${alarm.hour}:${alarm.minute}'),
+                              Text('Day: ${alarm.day}'),
+                              Text('Alarm Gap: ${alarm.alarmGap}'),
+                              Text(
+                                  'Is Alarm On: ${alarm.isAlarmOn ? "Yes" : "No"}'),
+                              Text('Subject ID: ${alarm.subjectId}'),
+                              Text('Subject Name: ${alarm.subjectName}'),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+          ],
         ),
       ),
     );

@@ -1,3 +1,4 @@
+import 'package:acha/model/alarm/alarm_info_db.dart';
 import 'package:alarm/alarm.dart';
 import 'package:flutter/material.dart';
 
@@ -63,6 +64,17 @@ class AlarmController {
 
   Future<void> deleteAll() async {
     await Alarm.stopAll();
+  }
+
+  Future<void> setAlarmForWeek() async {
+    await deleteAll();
+    var alarmList = await AlarmInfoDb().getAllAlarms();
+
+    for (var alarm in alarmList) {
+      if (alarm.isAlarmOn) {
+        await setAlarm(alarm);
+      }
+    }
   }
 
   void printAlarms() {
