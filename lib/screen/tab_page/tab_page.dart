@@ -17,10 +17,10 @@ class TabPage extends StatefulWidget {
 
 class _TabPageState extends State<TabPage> with SingleTickerProviderStateMixin {
   final List<Tab> _tabs = const [
-    Tab(icon: Icon(Icons.home), text: '알람'),
-    Tab(icon: Icon(Icons.handyman), text: '테스트'),
+    Tab(icon: Icon(Icons.timer_sharp), text: '알림'),
     Tab(icon: Icon(Icons.view_timeline), text: '공강'),
     Tab(icon: Icon(Icons.person), text: '유저 정보'),
+    Tab(icon: Icon(Icons.handyman), text: '테스트'),
   ];
 
   late TabController _tabController;
@@ -47,11 +47,11 @@ class _TabPageState extends State<TabPage> with SingleTickerProviderStateMixin {
         controller: _tabController,
         children: [
           const AlarmListPage(),
-          const MainServicePage(),
           const TimeTableJoinPage(),
           userProvider.username != null
               ? const UserInfoPage()
               : const LoginPage(),
+          const MainServicePage(),
         ],
       ),
       bottomNavigationBar: Container(

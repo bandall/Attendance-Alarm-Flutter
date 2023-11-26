@@ -190,7 +190,7 @@ class _AlarmListPageState extends State<AlarmListPage> {
   Widget build(BuildContext context) {
     UserProvider userProvider = Provider.of<UserProvider>(context);
     return Scaffold(
-      appBar: const CustomAppBar(title: '알림 목록 dev'),
+      appBar: const CustomAppBar(title: '알림 목록'),
       backgroundColor: Colors.white,
       body: Padding(
         padding: const EdgeInsets.all(8.0),

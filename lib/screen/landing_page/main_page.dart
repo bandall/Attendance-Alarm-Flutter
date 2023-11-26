@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:acha/model/alarm/app_launcher.dart';
 import 'package:acha/screen/alarm_page/alarm_ring_page.dart';
 import 'package:alarm/alarm.dart';
@@ -28,6 +30,7 @@ class MainPageState extends State<MainPage> {
   setAlarmStream() {
     Alarm.ringStream.stream.listen((alarmSetting) async {
       await AppLauncher().launchMyApp();
+      sleep(const Duration(milliseconds: 500));
 
       try {
         Navigator.push(context, MaterialPageRoute(builder: (context) {
@@ -54,7 +57,7 @@ class MainPageState extends State<MainPage> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               backgroundColor: Colors.red.shade400,
-              content: const Text('앱을 종료하면 알람이 실행되지 않습니다.\n홈 버튼으로 나가주세요.'),
+              content: const Text('앱을 종료하면 알림이 실행되지 않습니다.\n홈 버튼으로 나가주세요.'),
               duration: const Duration(seconds: 2),
             ),
           );
