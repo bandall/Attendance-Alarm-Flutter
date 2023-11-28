@@ -17,24 +17,12 @@ class _AlarmRingPageState extends State<AlarmRingPage> {
 
   void onConfirmPressed(BuildContext context) async {
     try {
-      final delayedDateTime =
-          widget.alarmSetting.dateTime.add(const Duration(days: 7));
-      final delayedAlarmSettings = AlarmSettings(
-        id: widget.alarmSetting.id,
-        dateTime: delayedDateTime,
-        assetAudioPath: widget.alarmSetting.assetAudioPath,
-        loopAudio: true,
-        vibrate: true,
-        fadeDuration: 2.0,
-        notificationTitle: widget.alarmSetting.notificationTitle,
-        notificationBody: widget.alarmSetting.notificationBody,
-        enableNotificationOnKill: true,
-      );
       await Alarm.stop(widget.alarmSetting.id);
 
       if (widget.alarmSetting.notificationBody.startsWith('[수업시간]')) {
-        await Alarm.set(alarmSettings: delayedAlarmSettings);
+        await setNextWeekAlarm();
       }
+
       Navigator.pop(context);
       await AppLauncher().launchAjouApp();
     } catch (e) {
@@ -44,29 +32,59 @@ class _AlarmRingPageState extends State<AlarmRingPage> {
 
   void onDelayPressed(BuildContext context) async {
     try {
-      final delayedDateTime =
-          widget.alarmSetting.dateTime.add(const Duration(minutes: 5));
-      var reNotificationBody = widget.alarmSetting.notificationBody
-          .replaceFirst('[수업시간]', '[RE:수업시간]');
-
-      final delayedAlarmSettings = AlarmSettings(
-        id: widget.alarmSetting.id,
-        dateTime: delayedDateTime,
-        assetAudioPath: widget.alarmSetting.assetAudioPath,
-        loopAudio: true,
-        vibrate: true,
-        fadeDuration: 2.0,
-        notificationTitle: widget.alarmSetting.notificationTitle,
-        notificationBody: reNotificationBody,
-        enableNotificationOnKill: true,
-      );
-
       await Alarm.stop(widget.alarmSetting.id);
-      await Alarm.set(alarmSettings: delayedAlarmSettings);
+
+      var reNotificationBody = widget.alarmSetting.notificationBody;
+      if (reNotificationBody.startsWith('[수업시간]')) {
+        reNotificationBody =
+            reNotificationBody.replaceFirst('[수업시간]', '[RE:수업시간]');
+        await setNextWeekAlarm();
+      }
+
+      await setDelayedAlarm(reNotificationBody);
       Navigator.pop(context);
     } catch (e) {
       debugPrint(e.toString());
     }
+  }
+
+  Future<void> setNextWeekAlarm() async {
+    final nextWeekAlarmTime =
+        widget.alarmSetting.dateTime.add(const Duration(days: 7));
+
+    final nextWeekAlarm = AlarmSettings(
+      id: widget.alarmSetting.id,
+      dateTime: nextWeekAlarmTime,
+      assetAudioPath: widget.alarmSetting.assetAudioPath,
+      loopAudio: true,
+      vibrate: true,
+      fadeDuration: 2.0,
+      notificationTitle: widget.alarmSetting.notificationTitle,
+      notificationBody: widget.alarmSetting.notificationBody,
+      enableNotificationOnKill: true,
+    );
+
+    await Alarm.set(alarmSettings: nextWeekAlarm);
+  }
+
+  Future<void> setDelayedAlarm(String reNotificationBody) async {
+    int delayedAlarmId = widget.alarmSetting.id + 100000;
+    final delayedDateTime =
+        widget.alarmSetting.dateTime.add(const Duration(minutes: 5));
+
+    final delayedAlarm = AlarmSettings(
+      id: delayedAlarmId,
+      dateTime: delayedDateTime,
+      assetAudioPath: widget.alarmSetting.assetAudioPath,
+      loopAudio: true,
+      vibrate: true,
+      fadeDuration: 2.0,
+      notificationTitle: widget.alarmSetting.notificationTitle,
+      notificationBody: reNotificationBody,
+      enableNotificationOnKill: true,
+    );
+
+    await Alarm.set(alarmSettings: delayedAlarm);
   }
 
   @override

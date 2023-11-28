@@ -210,13 +210,13 @@ class _AlarmListPageState extends State<AlarmListPage> {
                     child: Text(
                       "${_dayList[_alarmList[index].day]}요일",
                       style: const TextStyle(
-                          fontSize: 20.0,
+                          fontSize: 22.0,
                           fontWeight: FontWeight.bold,
                           color: Colors.blueGrey),
                     ),
                   );
                 } else {
-                  return Container(height: 5);
+                  return Container(height: 4);
                 }
               },
               itemBuilder: (context, index) {
@@ -256,7 +256,8 @@ class _AlarmListPageState extends State<AlarmListPage> {
                     adjustedTime.minute.toString().padLeft(2, '0');
 
                 return Card(
-                  color: Colors.white70,
+                  color: Colors.blueGrey[50],
+                  elevation: 1.0,
                   child: ListTile(
                     title: Text(
                       alarmInfo.subjectName,
