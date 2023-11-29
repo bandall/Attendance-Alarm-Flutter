@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:acha/model/alarm/app_launcher.dart';
+import 'package:acha/screen/alarm_page/alarm_ring_page.dart';
 import 'package:alarm/alarm.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -25,53 +28,14 @@ class MainPageState extends State<MainPage> {
   }
 
   setAlarmStream() {
-    Alarm.ringStream.stream.listen((event) async {
-      debugPrint(event.toString());
-      var alarmTime = event.dateTime;
-
-      final alarmSettings = AlarmSettings(
-        id: event.id,
-        dateTime: alarmTime.add(const Duration(days: 7)),
-        assetAudioPath: event.assetAudioPath,
-        loopAudio: true,
-        vibrate: true,
-        volumeMax: false,
-        fadeDuration: 2.0,
-        notificationTitle: event.notificationTitle,
-        notificationBody: event.notificationBody,
-        enableNotificationOnKill: true,
-        stopOnNotificationOpen: false,
-      );
-
-      AppLauncher().launchMyApp();
+    Alarm.ringStream.stream.listen((alarmSetting) async {
+      await AppLauncher().launchMyApp();
+      sleep(const Duration(milliseconds: 500));
 
       try {
-        showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20.0)),
-              title: Text(event.notificationTitle.toString(),
-                  style: const TextStyle(color: Colors.black, fontSize: 24)),
-              content: Text(event.notificationBody.toString(),
-                  style: const TextStyle(color: Colors.grey, fontSize: 18)),
-              actions: <Widget>[
-                TextButton(
-                  child: const Text('확인',
-                      style: TextStyle(color: Colors.black, fontSize: 18)),
-                  onPressed: () async {
-                    await Alarm.stop(event.id);
-                    await Alarm.set(alarmSettings: alarmSettings);
-                    Navigator.of(context).pop();
-                    await AppLauncher().launchAjouApp();
-                  },
-                ),
-              ],
-            );
-          },
-        );
+        Navigator.push(context, MaterialPageRoute(builder: (context) {
+          return AlarmRingPage(alarmSetting: alarmSetting);
+        }));
       } catch (e) {
         debugPrint(e.toString());
       }
@@ -93,7 +57,7 @@ class MainPageState extends State<MainPage> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               backgroundColor: Colors.red.shade400,
-              content: const Text('앱을 종료하면 알람이 실행되지 않습니다.\n홈 버튼으로 나가주세요.'),
+              content: const Text('앱을 종료하면 알림이 실행되지 않습니다.\n홈 버튼으로 나가주세요.'),
               duration: const Duration(seconds: 2),
             ),
           );

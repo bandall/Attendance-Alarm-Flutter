@@ -14,11 +14,9 @@ dependencies:
   flutter_secure_storage: ^8.0.0
   jwt_decoder: ^2.0.1
   provider: ^6.0.5
-  alarm: ^2.1.1
-  # alarm:
-  #   git:
-  #     url: https://github.com/gdelataillade/alarm.git
-  #     ref: main
+  # alarm: ^2.1.1
+  alarm:
+    path: ../packages/alarm
   flutter_dotenv: ^5.1.0
   cupertino_icons: ^1.0.2
   sqflite: ^2.2.8+4

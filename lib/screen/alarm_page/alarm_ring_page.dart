@@ -1,103 +1,202 @@
 import 'package:acha/model/alarm/app_launcher.dart';
 import 'package:acha/screen/component/app_bar.dart';
-import 'package:acha/screen/landing_page/main_page.dart';
-import 'package:acha/screen/tab_page/tab_page.dart';
 import 'package:alarm/alarm.dart';
 import 'package:flutter/material.dart';
 
-class AlarmRingPage extends StatelessWidget {
-  final AlarmSettings event;
+class AlarmRingPage extends StatefulWidget {
+  final AlarmSettings alarmSetting;
 
-  const AlarmRingPage({super.key, required this.event});
+  const AlarmRingPage({Key? key, required this.alarmSetting}) : super(key: key);
+
+  @override
+  State<AlarmRingPage> createState() => _AlarmRingPageState();
+}
+
+class _AlarmRingPageState extends State<AlarmRingPage> {
+  DateTime? lastPressed;
 
   void onConfirmPressed(BuildContext context) async {
-    final alarmSettings = AlarmSettings(
-      id: event.id,
-      dateTime: event.dateTime.add(const Duration(days: 7)),
-      assetAudioPath: event.assetAudioPath,
+    try {
+      await Alarm.stop(widget.alarmSetting.id);
+
+      if (widget.alarmSetting.notificationBody.startsWith('[수업시간]')) {
+        await setNextWeekAlarm();
+      }
+
+      Navigator.pop(context);
+      await AppLauncher().launchAjouApp();
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+  }
+
+  void onDelayPressed(BuildContext context) async {
+    try {
+      await Alarm.stop(widget.alarmSetting.id);
+
+      var reNotificationBody = widget.alarmSetting.notificationBody;
+      if (reNotificationBody.startsWith('[수업시간]')) {
+        reNotificationBody =
+            reNotificationBody.replaceFirst('[수업시간]', '[RE:수업시간]');
+        await setNextWeekAlarm();
+      }
+
+      await setDelayedAlarm(reNotificationBody);
+      Navigator.pop(context);
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+  }
+
+  Future<void> setNextWeekAlarm() async {
+    final nextWeekAlarmTime =
+        widget.alarmSetting.dateTime.add(const Duration(days: 7));
+
+    final nextWeekAlarm = AlarmSettings(
+      id: widget.alarmSetting.id,
+      dateTime: nextWeekAlarmTime,
+      assetAudioPath: widget.alarmSetting.assetAudioPath,
       loopAudio: true,
-      vibrate: false,
-      volumeMax: false,
+      vibrate: true,
       fadeDuration: 2.0,
-      notificationTitle: event.notificationTitle,
-      notificationBody: event.notificationBody,
+      notificationTitle: widget.alarmSetting.notificationTitle,
+      notificationBody: widget.alarmSetting.notificationBody,
       enableNotificationOnKill: true,
-      stopOnNotificationOpen: false,
     );
 
-    await Alarm.stop(event.id);
-    await Alarm.set(alarmSettings: alarmSettings);
-    await AppLauncher().launchAjouApp();
+    await Alarm.set(alarmSettings: nextWeekAlarm);
+  }
 
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => const MainPage()),
+  Future<void> setDelayedAlarm(String reNotificationBody) async {
+    int delayedAlarmId = widget.alarmSetting.id + 100000;
+    final delayedDateTime =
+        widget.alarmSetting.dateTime.add(const Duration(minutes: 5));
+
+    final delayedAlarm = AlarmSettings(
+      id: delayedAlarmId,
+      dateTime: delayedDateTime,
+      assetAudioPath: widget.alarmSetting.assetAudioPath,
+      loopAudio: true,
+      vibrate: true,
+      fadeDuration: 2.0,
+      notificationTitle: widget.alarmSetting.notificationTitle,
+      notificationBody: reNotificationBody,
+      enableNotificationOnKill: true,
     );
+
+    await Alarm.set(alarmSettings: delayedAlarm);
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: CustomAppBar(
-        title: event.notificationTitle!,
-      ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Column(
-                children: [
-                  const Text('과목명'), // 과목명 설명 추가
-                  Text(
-                    event.notificationBody!,
-                    style: const TextStyle(
-                        fontSize: 24, fontWeight: FontWeight.bold),
-                    textAlign: TextAlign.center,
-                  ),
-                ],
-              ),
-              const SizedBox(height: 40),
-              Container(
-                margin: const EdgeInsets.symmetric(vertical: 20),
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () => onConfirmPressed(context),
-                  style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.white,
-                    backgroundColor: Colors.blueGrey, // foreground
-                    padding: const EdgeInsets.symmetric(vertical: 15),
-                    textStyle: const TextStyle(
-                      fontSize: 20,
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (bool didpop) async {
+        if (didpop) {
+          return;
+        }
+        final now = DateTime.now();
+        if (lastPressed == null ||
+            now.difference(lastPressed!) > const Duration(seconds: 2)) {
+          lastPressed = now;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              backgroundColor: Colors.red.shade400,
+              content: const Text('알림을 종료해주세요!'),
+              duration: const Duration(seconds: 2),
+            ),
+          );
+          return Future.value(false);
+        }
+        return Future.value(true);
+      },
+      child: Scaffold(
+        appBar: const CustomAppBar(title: "출석체크 하세요!!", backButton: false),
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Column(
+                  children: [
+                    const Text('과목명'),
+                    Text(
+                      widget.alarmSetting.notificationBody,
+                      style: const TextStyle(
+                          fontSize: 24, fontWeight: FontWeight.bold),
+                      textAlign: TextAlign.center,
                     ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                  child: const Text('출석체크 하러가기'),
+                  ],
                 ),
-              ),
-              Container(
-                margin: const EdgeInsets.symmetric(vertical: 20),
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () => onConfirmPressed(context),
-                  style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.white,
-                    backgroundColor: Colors.blueGrey, // foreground
-                    padding: const EdgeInsets.symmetric(vertical: 15),
-                    textStyle: const TextStyle(
-                      fontSize: 20,
+                const SizedBox(height: 20),
+                Column(
+                  children: [
+                    const Text('수업 시간'),
+                    Text(
+                      "${widget.alarmSetting.dateTime.hour.toString().padLeft(2, '0')}시 ${widget.alarmSetting.dateTime.minute.toString().padLeft(2, '0')}분",
+                      style: const TextStyle(
+                          fontSize: 24, fontWeight: FontWeight.bold),
+                      textAlign: TextAlign.center,
                     ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                  child: const Text('5분 뒤로 미루기'),
+                  ],
                 ),
-              ),
-            ],
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(vertical: 20),
+                        width: double.infinity,
+                        child: ElevatedButton.icon(
+                          onPressed: () async {
+                            onDelayPressed(context);
+                          },
+                          style: ElevatedButton.styleFrom(
+                            foregroundColor: Colors.white,
+                            backgroundColor: Colors.red, // foreground
+                            padding: const EdgeInsets.symmetric(vertical: 15),
+                            textStyle: const TextStyle(
+                              fontSize: 18,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                          icon: const Icon(Icons.timer),
+                          label: const Text('5 분 뒤 알림'),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(vertical: 20),
+                        width: double.infinity,
+                        child: ElevatedButton.icon(
+                          onPressed: () async {
+                            onConfirmPressed(context);
+                          },
+                          style: ElevatedButton.styleFrom(
+                            foregroundColor: Colors.white,
+                            backgroundColor: Colors.blue.shade700, // foreground
+                            padding: const EdgeInsets.symmetric(vertical: 15),
+                            textStyle: const TextStyle(
+                              fontSize: 18,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                          icon: const Icon(Icons.check),
+                          label: const Text('출석체크 하기'),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),

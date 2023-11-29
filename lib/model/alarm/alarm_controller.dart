@@ -1,3 +1,4 @@
+import 'package:acha/model/alarm/alarm_info_db.dart';
 import 'package:alarm/alarm.dart';
 import 'package:flutter/material.dart';
 
@@ -53,18 +54,27 @@ class AlarmController {
       assetAudioPath: 'assets/long_blank.mp3',
       loopAudio: true,
       vibrate: true,
-      volumeMax: false,
       fadeDuration: 2.0,
       notificationTitle: '출석체크 하세요!!',
       notificationBody: '[수업시간] ${alarmInfo.subjectName}',
       enableNotificationOnKill: true,
-      stopOnNotificationOpen: false,
     );
     await Alarm.set(alarmSettings: alarmSettings);
   }
 
   Future<void> deleteAll() async {
     await Alarm.stopAll();
+  }
+
+  Future<void> setAlarmForWeek() async {
+    await deleteAll();
+    var alarmList = await AlarmInfoDb().getAllAlarms();
+
+    for (var alarm in alarmList) {
+      if (alarm.isAlarmOn) {
+        await setAlarm(alarm);
+      }
+    }
   }
 
   void printAlarms() {
