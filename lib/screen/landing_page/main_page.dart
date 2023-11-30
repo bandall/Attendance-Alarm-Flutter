@@ -44,39 +44,17 @@ class MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
-    return PopScope(
-      canPop: false,
-      onPopInvoked: (bool didpop) async {
-        if (didpop) {
-          return;
-        }
-        final now = DateTime.now();
-        if (lastPressed == null ||
-            now.difference(lastPressed!) > const Duration(seconds: 2)) {
-          lastPressed = now;
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              backgroundColor: Colors.red.shade400,
-              content: const Text('앱을 종료하면 알림이 실행되지 않습니다.\n홈 버튼으로 나가주세요.'),
-              duration: const Duration(seconds: 2),
-            ),
-          );
-          return Future.value(false);
-        }
-        return Future.value(true);
-      },
-      child: Scaffold(
-        body: Consumer<UserProvider>(
-          builder: (context, userProvider, child) {
-            if (!userProvider.isLoaded) {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            } else {
-              return const TabPage();
-            }
-          },
-        ),
+    return Scaffold(
+      body: Consumer<UserProvider>(
+        builder: (context, userProvider, child) {
+          if (!userProvider.isLoaded) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          } else {
+            return const TabPage();
+          }
+        },
       ),
     );
   }
