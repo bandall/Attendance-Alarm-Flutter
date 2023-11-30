@@ -137,8 +137,8 @@ class ServiceApi extends TokenApiUtils {
 
     Map<String, dynamic> body = {
       "emails": emails,
-      "minTimeDiff": 30,
-      "startTime": 0,
+      "minTimeDiff": 60,
+      "startTime": 96,
       "endTime": 289
     };
 

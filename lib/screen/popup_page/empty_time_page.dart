@@ -11,6 +11,9 @@ class EmptyTimePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    double screenHeight = MediaQuery.of(context).size.height;
+
     return Scaffold(
       appBar: const CustomAppBar(
         title: '조회된 공강 시간',
@@ -18,8 +21,12 @@ class EmptyTimePage extends StatelessWidget {
       ),
       body: TimetableView(
         laneEventsList: _buildLaneEvents(),
-        timetableStyle: const TimetableStyle(
-            laneWidth: 45, timeItemHeight: 30, timeItemWidth: 65),
+        timetableStyle: TimetableStyle(
+          laneWidth: screenWidth * 0.128,
+          timeItemHeight: screenHeight * 0.057,
+          timeItemWidth: screenWidth * 0.1,
+          startHour: 9,
+        ),
         onEmptySlotTap: onTimeSlotTappedCallBack,
         onEventTap: (TableEvent event) {
           showDialog(

@@ -50,7 +50,7 @@ class Assets {
           children: [
             const Icon(Icons.error, color: Colors.red),
             const SizedBox(width: 8),
-            Text(message ?? ""),
+            Flexible(child: Text(message ?? "")), // 여기를 수정
           ],
         ),
         backgroundColor: Colors.red[200],
@@ -67,7 +67,7 @@ class Assets {
           children: [
             const Icon(Icons.task_alt, color: Colors.blue),
             const SizedBox(width: 8),
-            Text(message ?? ""),
+            Flexible(child: Text(message ?? "")), // 여기를 수정
           ],
         ),
         backgroundColor: Colors.blue[200],
