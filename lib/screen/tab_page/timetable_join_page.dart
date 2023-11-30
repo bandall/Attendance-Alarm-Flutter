@@ -121,7 +121,7 @@ class _TimeTableJoinPageState extends State<TimeTableJoinPage> {
                               controller: _emailControllers[index],
                               focusNode: _emailFocusNodes[index],
                               decoration: InputDecoration(
-                                labelText: 'ID ${index + 1}',
+                                labelText: '이메일',
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10.0),
                                 ),

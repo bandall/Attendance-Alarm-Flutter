@@ -13,7 +13,7 @@
         <package android:name="kr.ac.ajou.mobile" />
     </queries>
     <application
-        android:label="acha"
+        android:label="아차차\n전자출결+"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
