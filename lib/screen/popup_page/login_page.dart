@@ -1,4 +1,3 @@
-
 import 'package:acha/screen/component/app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -37,7 +36,7 @@ class _LoginPageState extends State<LoginPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               const Icon(
-                Icons.location_on,
+                Icons.alarm_add,
                 size: 80,
                 color: Colors.blue,
               ),
