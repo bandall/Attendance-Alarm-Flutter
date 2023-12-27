@@ -43,6 +43,52 @@ class Assets {
     );
   }
 
+  void showPopupWithCallback(
+      BuildContext context, String text, Function callback) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          child: Container(
+            padding: const EdgeInsets.fromLTRB(20, 30, 20, 20),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8),
+              color: Colors.white,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SingleChildScrollView(
+                  child: Text(
+                    text,
+                    textAlign: TextAlign.left,
+                    style: const TextStyle(fontSize: 18, color: Colors.black87),
+                  ),
+                ),
+                const SizedBox(height: 30),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      callback();
+                    },
+                    child: const Text(
+                      '권한 설정하기',
+                      style: TextStyle(color: Colors.blue),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   void showErrorSnackBar(BuildContext context, String? message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -50,7 +96,9 @@ class Assets {
           children: [
             const Icon(Icons.error, color: Colors.red),
             const SizedBox(width: 8),
-            Flexible(child: Text(message ?? "")), // 여기를 수정
+            Flexible(
+                child:
+                    Text(message!.replaceFirst("Exception: ", ""))), // 여기를 수정
           ],
         ),
         backgroundColor: Colors.red[200],

@@ -32,7 +32,7 @@ class _AlarmListPageState extends State<AlarmListPage> {
     _setAlarmList();
   }
 
-  void _setAlarmList() async {
+  Future<void> _setAlarmList() async {
     var updatedList = await alarmDb.getAllAlarms();
     updatedList.sort((a, b) {
       if (a.day == b.day) {
@@ -81,10 +81,26 @@ class _AlarmListPageState extends State<AlarmListPage> {
         }
       }
 
-      AlarmController().printAlarms();
-
-      _setAlarmList();
+      await _setAlarmList();
       Assets().showSnackBar(context, '동기화 완료');
+    } catch (e) {
+      Assets().showErrorSnackBar(context, e.toString());
+    }
+  }
+
+  void _setAllAlarmInDb() async {
+    try {
+      List<AlarmInfo> alarms = await alarmDb.getAllAlarms();
+      await AlarmController().deleteAll();
+
+      for (var alarm in alarms) {
+        await alarmDb.insert(alarm);
+        if (alarm.isAlarmOn) {
+          await AlarmController().setAlarm(alarm);
+        }
+      }
+
+      await _setAlarmList();
     } catch (e) {
       Assets().showErrorSnackBar(context, e.toString());
     }
@@ -93,6 +109,7 @@ class _AlarmListPageState extends State<AlarmListPage> {
   void _addNewAlarm(UserProvider userProvider) async {
     try {
       _checkLogin(userProvider);
+      _checkTimeTable();
 
       var isAdded =
           await Navigator.push(context, MaterialPageRoute(builder: (context) {
@@ -102,6 +119,7 @@ class _AlarmListPageState extends State<AlarmListPage> {
       if (isAdded == null || isAdded == false) {
         return;
       }
+
       _getAlarmsAndSetAlarmSchdule(userProvider);
       Assets().showSnackBar(context, '알람 추가 완료');
     } catch (e) {
@@ -140,6 +158,12 @@ class _AlarmListPageState extends State<AlarmListPage> {
   void _checkLogin(UserProvider userProvider) {
     if (userProvider.username == null) {
       throw Exception('로그인이 필요합니다.');
+    }
+  }
+
+  void _checkTimeTable() {
+    if (_alarmList.isEmpty) {
+      throw Exception('에브리타임 시간표를 먼저 등록해주세요.');
     }
   }
 

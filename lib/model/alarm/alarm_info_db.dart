@@ -80,6 +80,17 @@ class AlarmInfoDb {
     );
   }
 
+  Future<bool> isAlarmSet(int day, int hour, int minute) async {
+    final db = await database;
+    var result = await db.query(
+      'alarm_info',
+      where: 'day = ? AND hour = ? AND minute = ?',
+      whereArgs: [day, hour, minute],
+    );
+
+    return result.isNotEmpty;
+  }
+
   Future<void> delete(int? alarmId) async {
     final db = await database;
 
