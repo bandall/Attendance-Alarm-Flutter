@@ -4,7 +4,12 @@
 
 <div align="center">
     Flutter와 스프링을 이용해 전자출결 시간에 맞춰 알림을 울려주는 도우미 앱
-    스프링 프로젝트 링크
+    <br><br>
+    <a href="https://github.com/bandall/database-project-2023" target="_blank">
+        <img src="https://img.shields.io/badge/spring-6DB33F?style=for-the-badge&logo=spring&logoColor=white" alt="Backend Spring Server - View Project">
+    </a>
+    <br>
+    <a href="https://github.com/bandall/database-project-2023" target="_blank">전차 줄결 도우미 백엔드 스프링 서버 보러가기</a>
 </div>
 
 <center>
