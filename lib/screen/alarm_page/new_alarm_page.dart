@@ -1,3 +1,4 @@
+import 'package:acha/model/alarm/alarm_info_db.dart';
 import 'package:acha/screen/component/app_bar.dart';
 import 'package:acha/screen/component/assets.dart';
 import 'package:flutter/material.dart';
@@ -45,6 +46,13 @@ class _AddAlarmPageState extends State<AddAlarmPage> {
 
       if (_gapController.text == "") {
         Assets().showErrorSnackBar(context, "알림 간격을 입력해주세요.");
+        return;
+      }
+
+      bool isAlarmAlreadySet = await AlarmInfoDb()
+          .isAlarmSet(_selectedDay, _selectedTime.hour, _selectedTime.minute);
+      if (isAlarmAlreadySet) {
+        Assets().showErrorSnackBar(context, "이미 같은 시간에 설정된 알림이 있습니다.");
         return;
       }
 

@@ -56,7 +56,7 @@ class AlarmInfo {
       'hour': hour,
       'minute': minute,
       'alarmGap': alarmGap,
-      'isAlarmOn': isAlarmOn,
+      'isAlarmOn': isAlarmOn ? 1 : 0,
       'subjectId': subjectId,
       'subjectName': subjectName,
     };
